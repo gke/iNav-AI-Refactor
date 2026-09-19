@@ -208,3 +208,4 @@ cd /home/gke/Documents/Flight/Code/iNavgke/build-test
 - **Navigation float64**: Infrastructure created; full migration targets next major version (breaks PG/MSP API)
 - **Next commit should include**: float64 GPS infrastructure + header guard fixes + enum/struct suffix fixes + SLOW_RAM removal + brace strip + MISRA fixes
 - **camelCase violations** include many established INAV patterns (PID variables, register names) — will need manual review- SESSION-5 (2026-09-19): TIME seat added to mapping nucleus (unit_map.{c,h}); 0 call sites yet; US2S intact; all invariants hold.
+- [2026-09-19] 2c55dfeb5: TIME seat landed (unit_map.c/h) + first chop wrapped in imu.c:860 (dT -> unitTimeFromMicroseconds), original verbatim under #else; tag v-GKE-time-chop-1

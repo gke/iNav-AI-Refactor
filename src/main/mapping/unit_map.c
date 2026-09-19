@@ -135,13 +135,3 @@ float unitTimeFromMicroseconds(int32_t microseconds) {
 int32_t unitTimeToMicroseconds(float seconds) {
     return lroundf(seconds * 1000000.0f);
 } // unitTimeToMicroseconds
-
-// Time
-
-float unitTimeFromMicroseconds(int32_t microseconds) {
-    return (float)microseconds * 1e-6f;
-} // unitTimeFromMicroseconds
-
-int32_t unitTimeToMicroseconds(float seconds) {
-    return lroundf(seconds * 1000000.0f);
-} // unitTimeToMicroseconds
