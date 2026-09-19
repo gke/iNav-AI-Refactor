@@ -37,6 +37,7 @@
 #include "drivers/time.h"
 
 #include "fc/settings.h"
+#include "mapping/unit_map.h"
 
 #include "rx/rx.h"
 
@@ -162,14 +163,32 @@ void powerLimiterApply(int16_t *throttleCommand) {
     int32_t overCurrent = current - activeCurrentLimit;
 
     if (lastCallTimestamp) {
-        currentThrAttnIntegrator = constrainf(currentThrAttnIntegrator + overCurrent * powerLimitsConfig()->piI * callTimeDelta * 2e-7f, 0, PWM_RANGE_MAX - PWM_RANGE_MIN);
+        currentThrAttnIntegrator = constrainf(currentThrAttnIntegrator + #ifdef GKE_UNIT_SEAT_TIME
+overCurrent * powerLimitsConfig()->piI * unitTimeFromMicroseconds(callTimeDelta) * 2e-1f
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+overCurrent * powerLimitsConfig()->piI * callTimeDelta * 2e-7f
+#endif // GKE_UNIT_SEAT_TIME
+, 0, PWM_RANGE_MAX - PWM_RANGE_MIN);
     }
 
     float currentThrAttnProportional = MAX(0, overCurrent) * powerLimitsConfig()->piP * 1e-3f;
 
-    uint16_t currentThrAttn = lrintf(pt1FilterApply3(&currentThrAttnFilter, currentThrAttnProportional + currentThrAttnIntegrator, callTimeDelta * 1e-6f));
+    uint16_t currentThrAttn = lrintf(pt1FilterApply3(&currentThrAttnFilter, #ifdef GKE_UNIT_SEAT_TIME
+currentThrAttnProportional + currentThrAttnIntegrator, unitTimeFromMicroseconds(callTimeDelta)
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+currentThrAttnProportional + currentThrAttnIntegrator, callTimeDelta * 1e-6f
+#endif // GKE_UNIT_SEAT_TIME
+));
 
-    throttleBase = wasLimitingCurrent ? lrintf(pt1FilterApply3(&currentThrLimitingBaseFilter, *throttleCommand, callTimeDelta * 1e-6f)) : *throttleCommand;
+    throttleBase = wasLimitingCurrent ? lrintf(pt1FilterApply3(&#ifdef GKE_UNIT_SEAT_TIME
+currentThrLimitingBaseFilter, *throttleCommand, unitTimeFromMicroseconds(callTimeDelta)
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+currentThrLimitingBaseFilter, *throttleCommand, callTimeDelta * 1e-6f
+#endif // GKE_UNIT_SEAT_TIME
+)) : *throttleCommand;
     uint16_t currentThrAttned = MAX(PWM_RANGE_MIN, (int16_t)throttleBase - currentThrAttn);
 
     if (activeCurrentLimit && currentThrAttned < *throttleCommand) {
@@ -191,14 +210,32 @@ void powerLimiterApply(int16_t *throttleCommand) {
     int32_t overPower = power - activePowerLimit;
 
     if (lastCallTimestamp) {
-        powerThrAttnIntegrator = constrainf(powerThrAttnIntegrator + overPower * powerLimitsConfig()->piI * callTimeDelta / voltage * 2e-5f, 0, PWM_RANGE_MAX - PWM_RANGE_MIN);
+        powerThrAttnIntegrator = constrainf(#ifdef GKE_UNIT_SEAT_TIME
+powerThrAttnIntegrator + overPower * powerLimitsConfig()->piI * unitTimeFromMicroseconds(callTimeDelta) / voltage * 2e+1f
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+powerThrAttnIntegrator + overPower * powerLimitsConfig()->piI * callTimeDelta / voltage * 2e-5f
+#endif // GKE_UNIT_SEAT_TIME
+, 0, PWM_RANGE_MAX - PWM_RANGE_MIN);
     }
 
     float powerThrAttnProportional = MAX(0, overPower) * powerLimitsConfig()->piP / voltage * 1e-1f;
 
-    uint16_t powerThrAttn = lrintf(pt1FilterApply3(&powerThrAttnFilter, powerThrAttnProportional + powerThrAttnIntegrator, callTimeDelta * 1e-6f));
+    uint16_t powerThrAttn = lrintf(pt1FilterApply3(&powerThrAttnFilter, #ifdef GKE_UNIT_SEAT_TIME
+powerThrAttnProportional + powerThrAttnIntegrator, unitTimeFromMicroseconds(callTimeDelta)
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+powerThrAttnProportional + powerThrAttnIntegrator, callTimeDelta * 1e-6f
+#endif // GKE_UNIT_SEAT_TIME
+));
 
-    throttleBase = wasLimitingPower ? lrintf(pt1FilterApply3(&powerThrLimitingBaseFilter, *throttleCommand, callTimeDelta * 1e-6)) : *throttleCommand;
+    throttleBase = wasLimitingPower ? lrintf(pt1FilterApply3(&#ifdef GKE_UNIT_SEAT_TIME
+powerThrLimitingBaseFilter, *throttleCommand, unitTimeFromMicroseconds(callTimeDelta)
+// GKE: original folded us-rescale preserved verbatim under #else for review.
+#else
+powerThrLimitingBaseFilter, *throttleCommand, callTimeDelta * 1e-6
+#endif // GKE_UNIT_SEAT_TIME
+)) : *throttleCommand;
     uint16_t powerThrAttned = MAX(PWM_RANGE_MIN, (int16_t)throttleBase - powerThrAttn);
 
     if (activePowerLimit && powerThrAttned < *throttleCommand) {
