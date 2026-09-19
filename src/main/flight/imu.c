@@ -38,6 +38,7 @@
 
 
 #include "config/feature.h"
+#include "mapping/unit_map.h"
 #include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
 
@@ -857,7 +858,13 @@ void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
     /* Calculate dT */
     static timeUs_t previousIMUUpdateTimeUs;
+#ifdef GKE_UNIT_SEAT_TIME
+    const float dT = unitTimeFromMicroseconds(currentTimeUs - previousIMUUpdateTimeUs);
+        // GKE: dT in seconds via the sanctioned TIME seat (AGENT.md mapping nucleus);
+        // original us expression preserved verbatim below for review.
+#else
     const float dT = (currentTimeUs - previousIMUUpdateTimeUs) * 1e-6;
+#endif // GKE_UNIT_SEAT_TIME
     previousIMUUpdateTimeUs = currentTimeUs;
 
     if (sensors(SENSOR_ACC) && isAccelUpdatedAtLeastOnce) {
