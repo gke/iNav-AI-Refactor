@@ -24,13 +24,13 @@
 
 #define USE_DSHOT_DMAR
 
-/*** Indicators ***/
+// ** Indicators **
 #define LED0                    PE3
 #define LED1                    PE4
 #define BEEPER                  PE9
 #define BEEPER_INVERTED
 
-/*** SPI/I2C bus ***/
+// ** SPI/I2C bus **
 #define USE_SPI
 #define USE_SPI_DEVICE_1
 #define SPI1_NSS_PIN           PC15
@@ -52,14 +52,14 @@
 
 #define USE_I2C
 #define USE_I2C_DEVICE_1
-#define I2C1_SCL                PB6    
+#define I2C1_SCL                PB6
 #define I2C1_SDA                PB7
 
 #define USE_I2C_DEVICE_2
 #define I2C2_SCL            PB10
-#define I2C2_SDA            PB11 
+#define I2C2_SDA            PB11
 
-/*** IMU sensors ***/
+// ** IMU sensors **
 
 #define USE_DUAL_GYRO
 #define USE_TARGET_IMU_HARDWARE_DESCRIPTORS
@@ -78,7 +78,7 @@
 #define IMU_ICM42688_1_ALIGN      CW270_DEG
 
 
-/*** OSD ***/
+// ** OSD **
 #define USE_MAX7456
 #define MAX7456_SPI_BUS         BUS_SPI3
 #define MAX7456_CS_PIN          PE2
@@ -90,7 +90,7 @@
 #define PINIO1_PIN              PD10
 #define PINIO2_PIN              PD11
 
-/*** Serial ports ***/
+// ** Serial ports **
 #define USE_VCP
 
 #define USE_UART1
@@ -130,7 +130,7 @@
 #define SERIALRX_PROVIDER               SERIALRX_SBUS
 #define SERIALRX_UART                   SERIAL_PORT_USART7
 
-/*** BARO & MAG ***/
+// ** BARO & MAG **
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
 #define USE_BARO_BMP280
@@ -141,7 +141,7 @@
 #define MAG_I2C_BUS             BUS_I2C2
 #define USE_MAG_ALL
 
-/*** ADC ***/
+// ** ADC **
 #define USE_ADC
 #define ADC_INSTANCE                    ADC1
 #define ADC_CHANNEL_1_PIN               PC0
@@ -152,7 +152,7 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_2
 #define RSSI_ADC_CHANNEL ADC_CHN_3
 
-/*** LED STRIP ***/
+// ** LED STRIP **
 #define USE_LED_STRIP
 #define WS2811_PIN                      PA8
 
@@ -166,13 +166,13 @@
 
 #define DEFAULT_FEATURES        (FEATURE_OSD | FEATURE_TELEMETRY | FEATURE_CURRENT_METER | FEATURE_VBAT | FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX)
 
-/*** Timer/PWM output ***/
+// ** Timer/PWM output **
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 #define MAX_PWM_OUTPUT_PORTS            12
 #define USE_DSHOT
 #define USE_ESC_SENSOR
 
-/*** Used pins ***/
+// ** Used pins **
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff

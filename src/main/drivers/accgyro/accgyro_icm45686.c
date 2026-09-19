@@ -37,56 +37,56 @@
 #include "accgyro_icm45686.h"
 
 #if defined(USE_IMU_ICM45686)
-/*
-reference: https://github.com/tdk-invn-oss/motion.mcu.icm45686.driver
-Datasheet: https://invensense.tdk.com/wp-content/uploads/documentation/DS-000577_ICM-45686.pdf
-Datasheet: https://invensense.tdk.com/wp-content/uploads/documentation/DS-000576_ICM-45605.pdf
-
-Note: ICM456xx has two modes of operation: Low-Power Mode Low-Noise Mode
-Note: Now implemented only UI Interface with Low-Noise Mode
-
- The following diagram shows the signal path for each mode:
- The cut-off frequency of the filters is determined by the ODR setting.
-
-                   Low-Noise Mode
-     +------+     +--------------+    +-------------+    +--------------+    +------------------+
-     | ADC  |---->| Anti-Alias   |--->| Interpolator|--->|     LPF      |--->| Sensor Registers |---> UI Interface
-     |      |     | Filter (AAF) |    |             | +->| & ODR Select |    |                  |
-     +--|---+     +--------------+    +-------------+ |  +--------------+    +------------------+
-        |                                             |
-        |           Low-Power Mode                    |
-        |         +--------------+                    |
-        |-------->| Notch Filter |--------------------|
-        |         |              |
-        |         +--------------+
-        |
-        |
-     +--|---+           +--------------+       +------+       +------+      +------------------+
-     | ADC  | --------> | Notch Filter | --->  | HPF  | --->  | LPF  | ---> | Sensor Registers | ---> AUX1 Interface
-     |      |           |              |       |      |       |      |      |                  |
-     +------+           +--------------+       +------+       +------+      +------------------+
-
- The AUX1 interface default configuration can be checked by read only register IOC_PAD_SCENARIO through host interface.
- By default, AUX1 interface is enabled, and default interface for AUX1 is SPI3W or I3CSM.
-
- In Low-Noise Mode, the ADC output is sent through an Anti-Alias Filter (AAF). The AAF is an FIR filter with fixed
- coefficients (not user configurable). The AAF can be enabled or disabled by the user using GYRO_SRC_CTRL and
- ACCEL_SRC_CTRL.
-
- The AUX1 signal path includes a Notch Filter. The notch filter is not user programmable. The usage of the notch
- filter in the auxiliary path is recommended for sharper roll-off and for the cases where user is asynchronously
- sampling the auxiliary interface data output at integer multiples of 1 kHz rate. The notch filter may be bypassed
- using GYRO_OIS_M6_BYP.
-
- The notch filter is followed by an HPF on the AUX1 signal path. HPF cut-off frequency can be selected using
- GYRO_OIS_HPFBW_SEL and ACCEL_OIS_HPFBW_SEL. HPF can be bypassed using GYRO_OIS_HPF1_BYP and
- ACCEL_OIS_HPF1_BYP.
-
- The HPF is followed by LPF on the AUX1 signal path. The AUX1 LPF BW is set by register bit field
- GYRO_OIS_LPF1BW_SEL and ACCEL_OIS_LPF1BW_SEL for gyroscope and accelerometer respectively. This is
- followed by Full Scale Range (FSR) selection based on user configurable settings for register fields
- GYRO_AUX1_FS_SEL and ACCEL_AUX1_FS_SEL. AUX1 output is fixed at 6.4kHz ODR.
-*/
+//
+// reference: https://github.com/tdk-invn-oss/motion.mcu.icm45686.driver
+// Datasheet: https://invensense.tdk.com/wp-content/uploads/documentation/DS-000577_ICM-45686.pdf
+// Datasheet: https://invensense.tdk.com/wp-content/uploads/documentation/DS-000576_ICM-45605.pdf
+//
+// Note: ICM456xx has two modes of operation: Low-Power Mode Low-Noise Mode
+// Note: Now implemented only UI Interface with Low-Noise Mode
+//
+// The following diagram shows the signal path for each mode:
+// The cut-off frequency of the filters is determined by the ODR setting.
+//
+// Low-Noise Mode
+// +------+     +--------------+    +-------------+    +--------------+    +------------------+
+// | ADC  |---->| Anti-Alias   |--->| Interpolator|--->|     LPF      |--->| Sensor Registers |---> UI Interface
+// |      |     | Filter (AAF) |    |             | +->| & ODR Select |    |                  |
+// +--|---+     +--------------+    +-------------+ |  +--------------+    +------------------+
+// |                                             |
+// |           Low-Power Mode                    |
+// |         +--------------+                    |
+// |-------->| Notch Filter |--------------------|
+// |         |              |
+// |         +--------------+
+// |
+// |
+// +--|---+           +--------------+       +------+       +------+      +------------------+
+// | ADC  | --------> | Notch Filter | --->  | HPF  | --->  | LPF  | ---> | Sensor Registers | ---> AUX1 Interface
+// |      |           |              |       |      |       |      |      |                  |
+// +------+           +--------------+       +------+       +------+      +------------------+
+//
+// The AUX1 interface default configuration can be checked by read only register IOC_PAD_SCENARIO through host interface.
+// By default, AUX1 interface is enabled, and default interface for AUX1 is SPI3W or I3CSM.
+//
+// In Low-Noise Mode, the ADC output is sent through an Anti-Alias Filter (AAF). The AAF is an FIR filter with fixed
+// coefficients (not user configurable). The AAF can be enabled or disabled by the user using GYRO_SRC_CTRL and
+// ACCEL_SRC_CTRL.
+//
+// The AUX1 signal path includes a Notch Filter. The notch filter is not user programmable. The usage of the notch
+// filter in the auxiliary path is recommended for sharper roll-off and for the cases where user is asynchronously
+// sampling the auxiliary interface data output at integer multiples of 1 kHz rate. The notch filter may be bypassed
+// using GYRO_OIS_M6_BYP.
+//
+// The notch filter is followed by an HPF on the AUX1 signal path. HPF cut-off frequency can be selected using
+// GYRO_OIS_HPFBW_SEL and ACCEL_OIS_HPFBW_SEL. HPF can be bypassed using GYRO_OIS_HPF1_BYP and
+// ACCEL_OIS_HPF1_BYP.
+//
+// The HPF is followed by LPF on the AUX1 signal path. The AUX1 LPF BW is set by register bit field
+// GYRO_OIS_LPF1BW_SEL and ACCEL_OIS_LPF1BW_SEL for gyroscope and accelerometer respectively. This is
+// followed by Full Scale Range (FSR) selection based on user configurable settings for register fields
+// GYRO_AUX1_FS_SEL and ACCEL_AUX1_FS_SEL. AUX1 output is fixed at 6.4kHz ODR.
+//
 
 // NOTE: ICM-45686 does NOT have a bank select register like ICM-426xx
 // The ICM-45686 uses Indirect Register (IREG) access for internal registers
@@ -261,7 +261,7 @@ Note: Now implemented only UI Interface with Low-Noise Mode
 #define ICM456XX_SPI_BUFFER_SIZE                (1 + ICM456XX_DATA_LENGTH) // 1 byte register + 6 bytes data
 
 static const gyroFilterAndRateConfig_t icm45xxGyroConfigs[] = {
-    /*   LPF          ODR   { lpfBits,                            odrReg } */
+    // LPF          ODR   { lpfBits,                            odrReg }
     { GYRO_LPF_NONE,  6000, { ICM456XX_GYRO_UI_LPFBW_BYPASS,      0x03 } },
     { GYRO_LPF_256HZ, 6000, { ICM456XX_GYRO_UI_LPFBW_ODR_DIV_16,  0x03 } }, // ≈400 Hz
     { GYRO_LPF_188HZ, 6000, { ICM456XX_GYRO_UI_LPFBW_ODR_DIV_32,  0x03 } }, // ≈200 Hz
@@ -269,19 +269,18 @@ static const gyroFilterAndRateConfig_t icm45xxGyroConfigs[] = {
     { GYRO_LPF_42HZ,  6000, { ICM456XX_GYRO_UI_LPFBW_ODR_DIV_128, 0x03 } }, // ≈50 Hz
 };
 
-/**
- * @brief This function follows the IREG WRITE procedure (Section 14.1-14.4 of the datasheet)
- * using indirect addressing via IREG_ADDR_15_8, IREG_ADDR_7_0, and IREG_DATA registers.
- * After writing, an internal operation transfers the data to the target IREG address.
- * Ensures compliance with the required minimum time gap and checks the IREG_DONE bit.
- *
- * @param dev   Pointer to the SPI device structure.
- * @param reg   16-bit internal IREG register address.
- * @param value Value to be written to the register.
- * @return true if the write was successful
- */
-static bool icm45686WriteIREG(const busDevice_t *dev, uint16_t reg, uint8_t value)
-{
+//
+// @brief This function follows the IREG WRITE procedure (Section 14.1-14.4 of the datasheet)
+// using indirect addressing via IREG_ADDR_15_8, IREG_ADDR_7_0, and IREG_DATA registers.
+// After writing, an internal operation transfers the data to the target IREG address.
+// Ensures compliance with the required minimum time gap and checks the IREG_DONE bit.
+//
+// @param dev   Pointer to the SPI device structure.
+// @param reg   16-bit internal IREG register address.
+// @param value Value to be written to the register.
+// @return true if the write was successful
+//
+static bool icm45686WriteIREG(const busDevice_t *dev, uint16_t reg, uint8_t value) {
     const uint8_t msb = (reg >> 8) & 0xFF;
     const uint8_t lsb = reg & 0xFF;
 
@@ -293,73 +292,60 @@ static bool icm45686WriteIREG(const busDevice_t *dev, uint16_t reg, uint8_t valu
     for (uint32_t waited_us = 0; waited_us < ICM456XX_IREG_TIMEOUT_US; waited_us += 10) {
         uint8_t misc2 = 0;
         busRead(dev, ICM456XX_REG_MISC2, &misc2);
-        if (misc2 & ICM456XX_BIT_IREG_DONE) {
-            return true;
-        }
+        if (misc2 & ICM456XX_BIT_IREG_DONE) return true;;
         delayMicroseconds(10);
     }
 
     return false; // timeout
-}
+} // icm45686WriteIREG
 
-static void icm45686AccInit(accDev_t *acc)
-{
+static void icm45686AccInit(accDev_t *acc) {
     acc->acc_1G = 512 * 4; // 16g scale
-}
+} // icm45686AccInit
 
-static bool icm45686AccRead(accDev_t *acc)
-{
+static bool icm45686AccRead(accDev_t *acc) {
     uint8_t data[6];
 
     const bool ack = busReadBuf(acc->busDev, ICM456XX_ACCEL_DATA_X1_UI, data, 6);
-    if (!ack) {
-        return false;
-    }
+    if (!ack) return false;;
 
     acc->ADCRaw[X] = (float) int16_val_little_endian(data, 0);
     acc->ADCRaw[Y] = (float) int16_val_little_endian(data, 1);
     acc->ADCRaw[Z] = (float) int16_val_little_endian(data, 2);
 
     return true;
-}
+} // icm45686AccRead
 
-static bool icm45686GyroRead(gyroDev_t *gyro)
-{
+static bool icm45686GyroRead(gyroDev_t *gyro) {
     uint8_t data[6];
 
     const bool ack = busReadBuf(gyro->busDev, ICM456XX_GYRO_DATA_X1_UI, data, 6);
-    if (!ack) {
-        return false;
-    }
+    if (!ack) return false;;
 
     gyro->gyroADCRaw[X] = (float) int16_val_little_endian(data, 0);
     gyro->gyroADCRaw[Y] = (float) int16_val_little_endian(data, 1);
     gyro->gyroADCRaw[Z] = (float) int16_val_little_endian(data, 2);
 
     return true;
-}
+} // icm45686GyroRead
 
-static bool icm45686ReadTemperature(gyroDev_t *gyro, int16_t * temp)
-{
+static bool icm45686ReadTemperature(gyroDev_t *gyro, int16_t * temp) {
     uint8_t data[2];
 
     const bool ack = busReadBuf(gyro->busDev, ICM456XX_TEMP_DATA1, data, 2);
-    if (!ack) {
-        return false;
-    }
-    // From datasheet: Temperature in Degrees Centigrade = (TEMP_DATA / 128) + 25 
+    if (!ack) return false;;
+    // From datasheet: Temperature in radians Centigrade = (TEMP_DATA / 128) + 25
     *temp = ( int16_val_little_endian(data, 0) / 12.8f ) + 250.0f; // Temperature stored as degC*10
 
     return true;
-}
+} // icm45686ReadTemperature
 
-static void icm45686AccAndGyroInit(gyroDev_t *gyro)
-{
+static void icm45686AccAndGyroInit(gyroDev_t *gyro) {
     busDevice_t * dev = gyro->busDev;
     const gyroFilterAndRateConfig_t * config = chooseGyroConfig(gyro->lpf, 1000000 / gyro->requestedSampleIntervalUs,
-                                                                &icm45xxGyroConfigs[0], ARRAYLEN(icm45xxGyroConfigs));
+    &icm45xxGyroConfigs[0], ARRAYLEN(icm45xxGyroConfigs));
     gyro->sampleRateIntervalUs = 1000000 / config->gyroRateHz;
-        
+
     busSetSpeed(dev, BUS_SPEED_INITIALIZATION);
 
     // enable sensors
@@ -372,40 +358,31 @@ static void icm45686AccAndGyroInit(gyroDev_t *gyro)
     delay(ICM456XX_ACCEL_STARTUP_TIME_MS);
     // gyro filters
     // Enable Anti-Alias (AAF) Filter and Interpolator for Gyro (Section 7.2 of datasheet)
-    if (!icm45686WriteIREG(dev, ICM456XX_GYRO_SRC_CTRL_IREG_ADDR, ICM456XX_SRC_CTRL_AAF_ENABLE_BIT | ICM456XX_SRC_CTRL_INTERP_ENABLE_BIT)) {
-        // AAF/Interpolator initialization failed, fallback to disabled state
-        icm45686WriteIREG(dev, ICM456XX_GYRO_SRC_CTRL_IREG_ADDR, 0);
-    }
+    if (!icm45686WriteIREG(dev, ICM456XX_GYRO_SRC_CTRL_IREG_ADDR, ICM456XX_SRC_CTRL_AAF_ENABLE_BIT | ICM456XX_SRC_CTRL_INTERP_ENABLE_BIT)) // AAF/Interpolator initialization failed, fallback to disabled state
+    icm45686WriteIREG(dev, ICM456XX_GYRO_SRC_CTRL_IREG_ADDR, 0);;
     // Set the Gyro UI LPF bandwidth cut-off (Section 7.3 of datasheet)
-    if (!icm45686WriteIREG(dev, ICM456XX_GYRO_UI_LPF_CFG_IREG_ADDR, config->gyroConfigValues[0])) {
-        // If LPF configuration fails, fallback to BYPASS
-        icm45686WriteIREG(dev, ICM456XX_GYRO_UI_LPF_CFG_IREG_ADDR, ICM456XX_GYRO_UI_LPFBW_BYPASS);
-    }
+    if (!icm45686WriteIREG(dev, ICM456XX_GYRO_UI_LPF_CFG_IREG_ADDR, config->gyroConfigValues[0])) // If LPF configuration fails, fallback to BYPASS
+    icm45686WriteIREG(dev, ICM456XX_GYRO_UI_LPF_CFG_IREG_ADDR, ICM456XX_GYRO_UI_LPFBW_BYPASS);;
     // accel filters
     // Enable Anti-Alias Filter and Interpolator for Accel (Section 7.2 of datasheet)
-    if (!icm45686WriteIREG(dev, ICM456XX_ACCEL_SRC_CTRL_IREG_ADDR, ICM456XX_SRC_CTRL_AAF_ENABLE_BIT | ICM456XX_SRC_CTRL_INTERP_ENABLE_BIT)) {
-        icm45686WriteIREG(dev, ICM456XX_ACCEL_SRC_CTRL_IREG_ADDR, 0);
-    }
+    if (!icm45686WriteIREG(dev, ICM456XX_ACCEL_SRC_CTRL_IREG_ADDR, ICM456XX_SRC_CTRL_AAF_ENABLE_BIT | ICM456XX_SRC_CTRL_INTERP_ENABLE_BIT)) icm45686WriteIREG(dev, ICM456XX_ACCEL_SRC_CTRL_IREG_ADDR, 0);;
     // Set the Accel UI LPF bandwidth cut-off to ODR/8 (Section 7.3 of datasheet)
-    if (!icm45686WriteIREG(dev, ICM456XX_ACCEL_UI_LPF_CFG_IREG_ADDR, ICM456XX_ACCEL_UI_LPFBW_ODR_DIV_8)) {
-        // If LPF configuration fails, fallback to BYPASS
-        icm45686WriteIREG(dev, ICM456XX_ACCEL_UI_LPF_CFG_IREG_ADDR, ICM456XX_ACCEL_UI_LPFBW_BYPASS);
-    }
+    if (!icm45686WriteIREG(dev, ICM456XX_ACCEL_UI_LPF_CFG_IREG_ADDR, ICM456XX_ACCEL_UI_LPFBW_ODR_DIV_8)) // If LPF configuration fails, fallback to BYPASS
+    icm45686WriteIREG(dev, ICM456XX_ACCEL_UI_LPF_CFG_IREG_ADDR, ICM456XX_ACCEL_UI_LPFBW_BYPASS);;
     // Setup scale and odr values for gyro
     busWrite(dev, ICM456XX_GYRO_CONFIG0, ICM456XX_GYRO_FS_SEL_2000DPS | config->gyroConfigValues[1]);
     // Per datasheet Table 9-6: 35ms minimum startup time
     delay(ICM456XX_GYRO_STARTUP_TIME_MS);
-    
+
     busWrite(dev, ICM456XX_INT1_CONFIG2, ICM456XX_INT1_MODE_PULSED | ICM456XX_INT1_DRIVE_CIRCUIT_PP |
-                                            ICM456XX_INT1_POLARITY_ACTIVE_HIGH);
+    ICM456XX_INT1_POLARITY_ACTIVE_HIGH);
     busWrite(dev, ICM456XX_INT1_CONFIG0, ICM456XX_INT1_STATUS_EN_DRDY);
 
     delay(ICM456XX_INT_CONFIG_DELAY_MS);
     busSetSpeed(dev, BUS_SPEED_FAST);
-}
+} // icm45686AccAndGyroInit
 
-static bool icm45686DeviceDetect(busDevice_t * dev)
-{
+static bool icm45686DeviceDetect(busDevice_t * dev) {
     uint8_t tmp = 0xFF;
     uint8_t attemptsRemaining = 5;
     uint32_t waitedMs = 0;
@@ -418,16 +395,12 @@ static bool icm45686DeviceDetect(busDevice_t * dev)
     // Poll until soft reset completes (SOFT_RESET bit clears) per datasheet Section 9.4
     do {
         busRead(dev, ICM456XX_REG_MISC2, &tmp);
-        if (!(tmp & ICM456XX_SOFT_RESET)) {
-            break;
-        }
+        if (!(tmp & ICM456XX_SOFT_RESET)) break;;
         delay(1);
         waitedMs++;
     } while (waitedMs < 20);
 
-    if (tmp & ICM456XX_SOFT_RESET) {
-        return false;
-    }
+    if (tmp & ICM456XX_SOFT_RESET) return false;;
     // Initialize power management to a known state after reset
     // This ensures sensors are off and ready for proper initialization
     busWrite(dev, ICM456XX_PWR_MGMT0, 0x00);
@@ -435,39 +408,29 @@ static bool icm45686DeviceDetect(busDevice_t * dev)
     do {
         delay(150);
         busRead(dev, ICM456XX_WHO_AM_REGISTER, &tmp);
-        if (tmp == ICM45686_WHO_AM_I_CONST) {
-            return true;
-        }
+        if (tmp == ICM45686_WHO_AM_I_CONST) return true;;
     } while (attemptsRemaining--);
 
     return false;
-}
+} // icm45686DeviceDetect
 
-bool icm45686AccDetect(accDev_t *acc)
-{
+bool icm45686AccDetect(accDev_t *acc) {
     acc->busDev = busDeviceOpen(BUSTYPE_ANY, DEVHW_ICM45686, acc->imuSensorToUse);
-    if (acc->busDev == NULL) {
-        return false;
-    }
+    if (acc->busDev == NULL) return false;;
 
     mpuContextData_t * ctx = busDeviceGetScratchpadMemory(acc->busDev);
-    if (ctx->chipMagicNumber != 0x4265) {
-        return false;
-    }
+    if (ctx->chipMagicNumber != 0x4265) return false;;
 
     acc->initFn = icm45686AccInit;
     acc->readFn = icm45686AccRead;
     acc->accAlign = acc->busDev->param;
 
     return true;
-}
+} // icm45686AccDetect
 
-bool icm45686GyroDetect(gyroDev_t *gyro)
-{
+bool icm45686GyroDetect(gyroDev_t *gyro) {
     gyro->busDev = busDeviceInit(BUSTYPE_ANY, DEVHW_ICM45686, gyro->imuSensorToUse, OWNER_MPU);
-    if (gyro->busDev == NULL) {
-        return false;
-    }
+    if (gyro->busDev == NULL) return false;;
 
     if (!icm45686DeviceDetect(gyro->busDev)) {
         busDeviceDeInit(gyro->busDev);
@@ -486,7 +449,7 @@ bool icm45686GyroDetect(gyroDev_t *gyro)
     gyro->gyroAlign = gyro->busDev->param;
 
     return true;
-}
+} // icm45686GyroDetect
 
 
 #endif

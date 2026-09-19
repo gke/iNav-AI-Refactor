@@ -35,12 +35,11 @@
 
 #include "io/ledstrip.h"
 
-void targetConfiguration(void)
-{
-  pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
+void targetConfiguration(void) {
+    pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
 
-  // configure the built-in WS2812B led as makeshift indicator led
-  ledStripConfig_t *config = ledStripConfigMutable();
-  ledConfig_t *lc = config->ledConfigs;
-  DEFINE_LED(lc, 0, 0, COLOR_BLUE, 0, LED_FUNCTION_COLOR, LED_FLAG_OVERLAY(LED_OVERLAY_WARNING), 0);
-}
+    // configure the built-in WS2812B led as makeshift indicator led
+    ledStripConfig_t *config = ledStripConfigMutable();
+    ledConfig_t *lc = config->ledConfigs;
+    DEFINE_LED(lc, 0, 0, COLOR_BLUE, 0, LED_FUNCTION_COLOR, LED_FLAG_OVERLAY(LED_OVERLAY_WARNING), 0);
+} // targetConfiguration

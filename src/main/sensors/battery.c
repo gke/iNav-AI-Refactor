@@ -36,7 +36,7 @@
 #include "drivers/time.h"
 
 #include "fc/config.h"
-#include "fc/control_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/fc_core.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
@@ -123,7 +123,7 @@ void pgResetFn_batteryProfiles(batteryProfile_t *instance)
                 .critical = SETTING_BATTERY_CAPACITY_CRITICAL_DEFAULT,
             },
 
-            .controlProfile = 0,
+            .controlRateProfile = 0,
 
             .motor = {
                 .throttleIdle = SETTING_THROTTLE_IDLE_DEFAULT,
@@ -248,8 +248,8 @@ void setBatteryProfile(uint8_t profileIndex)
         profileIndex = 0;
     }
     currentBatteryProfile = batteryProfiles(profileIndex);
-    if ((currentBatteryProfile->controlProfile > 0) && (currentBatteryProfile->controlProfile <= MAX_CONTROL_PROFILE_COUNT)) {
-        setConfigProfile(currentBatteryProfile->controlProfile - 1);
+    if ((currentBatteryProfile->controlRateProfile > 0) && (currentBatteryProfile->controlRateProfile < MAX_CONTROL_RATE_PROFILE_COUNT)) {
+        setConfigProfile(currentBatteryProfile->controlRateProfile - 1);
     }
 }
 
@@ -288,7 +288,7 @@ static void updateBatteryVoltage(timeUs_t timeDelta, bool justConnected)
             }
             break;
 #endif
-
+        
 #if defined(USE_FAKE_BATT_SENSOR)
     case VOLTAGE_SENSOR_FAKE:
         vbat = fakeBattSensorGetVBat();
@@ -328,32 +328,30 @@ static void updateBatteryVoltage(timeUs_t timeDelta, bool justConnected)
 batteryState_e checkBatteryVoltageState(void)
 {
     uint16_t stateVoltage = getBatteryVoltage();
-    static batteryState_e currentBatteryVoltageState = BATTERY_OK;
-
-    switch (currentBatteryVoltageState)
+    switch (batteryState)
     {
         case BATTERY_OK:
             if (stateVoltage <= (batteryWarningVoltage - VBATT_HYSTERESIS)) {
-                currentBatteryVoltageState = BATTERY_WARNING;
+                return BATTERY_WARNING;
             }
             break;
         case BATTERY_WARNING:
             if (stateVoltage <= (batteryCriticalVoltage - VBATT_HYSTERESIS)) {
-                currentBatteryVoltageState = BATTERY_CRITICAL;
+                return BATTERY_CRITICAL;
             } else if (stateVoltage > (batteryWarningVoltage + VBATT_HYSTERESIS)){
-                currentBatteryVoltageState = BATTERY_OK;
+                return BATTERY_OK;
             }
             break;
         case BATTERY_CRITICAL:
             if (stateVoltage > (batteryCriticalVoltage + VBATT_HYSTERESIS)) {
-                currentBatteryVoltageState = BATTERY_WARNING;
+                return BATTERY_WARNING;
             }
             break;
         default:
             break;
     }
 
-    return currentBatteryVoltageState;
+    return batteryState;
 }
 
 static void checkBatteryCapacityState(void)
@@ -634,12 +632,6 @@ void currentMeterUpdate(timeUs_t timeDelta)
             amperage = 0;
             break;
     }
-
-#ifdef USE_SIMULATOR
-    if (ARMING_FLAG(SIMULATOR_MODE_HITL) && SIMULATOR_HAS_OPTION(HITL_CURRENT_SENSOR)) {
-        amperage = ((uint16_t)simulatorData.current) * 10;
-    }
-#endif
 
     // Clamp amperage to positive values
     amperage = MAX(0, amperage);

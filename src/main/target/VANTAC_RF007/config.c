@@ -25,8 +25,7 @@
 #include <platform.h>
 #include "drivers/pwm_mapping.h"
 
-void targetConfiguration(void)
-{
-  // default "ESC" pin to be a motor
-  timerOverridesMutable(timer2id(TIM1))->outputMode = OUTPUT_MODE_MOTORS;
-}
+void targetConfiguration(void) {
+    // default "ESC" pin to be a motor
+    timerOverridesMutable(timer2id(TIM1))->outputMode = OUTPUT_MODE_MOTORS;
+} // targetConfiguration

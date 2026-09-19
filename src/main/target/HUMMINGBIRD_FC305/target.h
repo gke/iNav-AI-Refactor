@@ -84,7 +84,7 @@
 #define MAX7456_CS_PIN          PC13
 
 // *************** SPI1 Flash_SD ***********************
-#define USE_SPI_DEVICE_1 
+#define USE_SPI_DEVICE_1
 #define SPI1_SCK_PIN            PA5
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PA7

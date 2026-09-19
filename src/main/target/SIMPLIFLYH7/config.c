@@ -28,11 +28,10 @@
 #include "io/serial.h"
 #include "drivers/pwm_mapping.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART5)].functionMask = FUNCTION_ESCSERIAL;
     pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
-    
+
     timerOverridesMutable(timer2id(TIM8))->outputMode = OUTPUT_MODE_MOTORS;
     timerOverridesMutable(timer2id(TIM3))->outputMode = OUTPUT_MODE_LED;
-}
+} // targetConfiguration

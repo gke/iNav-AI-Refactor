@@ -37,8 +37,8 @@
 
 #define USE_SPI_DEVICE_2
 #define SPI2_SCK_PIN            PB13
-#define SPI2_MISO_PIN	        PC2 
-#define SPI2_MOSI_PIN	        PC3 
+#define SPI2_MISO_PIN	        PC2
+#define SPI2_MOSI_PIN	        PC3
 
 #define USE_SPI_DEVICE_3
 #define SPI3_SCK_PIN            PC10
@@ -70,12 +70,12 @@
 # define IMU_1_CS_PIN            PC9
 # define IMU_1_IRQ_PIN           PD4
 # define IMU_1_SPI_BUS           BUS_SPI1
-# define IMU_1_ALIGN             CW0_DEG_FLIP 
+# define IMU_1_ALIGN             CW0_DEG_FLIP
 // IMU_2 is sketchy and was not verified on actual hardware
 # define IMU_2_CS_PIN            PB1
 # define IMU_2_IRQ_PIN           PB2
 # define IMU_2_SPI_BUS           BUS_SPI4
-# define IMU_2_ALIGN             CW90_DEG_FLIP 
+# define IMU_2_ALIGN             CW90_DEG_FLIP
 
 // M25P256 flash
 #define USE_FLASHFS
@@ -89,7 +89,7 @@
 #define USE_SDCARD_SDIO
 #define SDCARD_SDIO_DEVICE      SDIODEV_2
 #define SDCARD_SDIO_4BIT
-#define SDCARD_SDIO2_CMD_ALT    // spare pin 
+#define SDCARD_SDIO2_CMD_ALT    // spare pin
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
@@ -138,7 +138,7 @@
 #define SERIALRX_UART           SERIAL_PORT_USART5
 #define GPS_UART                SERIAL_PORT_USART1
 
-//Baro 
+//Baro
 #define USE_BARO
 #define USE_BARO_BMP280
 #define USE_BARO_DPS310
@@ -160,10 +160,10 @@
 // ADC
 #define USE_ADC
 #define ADC_INSTANCE                ADC1
-#define ADC_CHANNEL_1_PIN           PA4 
-#define ADC_CHANNEL_2_PIN           PC5 
+#define ADC_CHANNEL_1_PIN           PA4
+#define ADC_CHANNEL_2_PIN           PC5
 #define ADC_CHANNEL_3_PIN           PC0
-#define ADC_CHANNEL_4_PIN           PC4 
+#define ADC_CHANNEL_4_PIN           PC4
 #define VBAT_ADC_CHANNEL            ADC_CHN_1
 #define RSSI_ADC_CHANNEL            ADC_CHN_2
 #define CURRENT_METER_ADC_CHANNEL   ADC_CHN_3

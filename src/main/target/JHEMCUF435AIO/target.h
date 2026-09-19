@@ -41,7 +41,7 @@
 
 // MPU6500
 #define USE_IMU_MPU6500
-#define IMU_MPU6500_ALIGN       CW0_DEG 
+#define IMU_MPU6500_ALIGN       CW0_DEG
 #define MPU6500_SPI_BUS         BUS_SPI1
 #define MPU6500_CS_PIN          SPI1_NSS_PIN
 
@@ -81,9 +81,9 @@
 #define USE_MAG_ALL
 #define DEFAULT_I2C_BUS         BUS_I2C2
 
- 
+
 // *************** OSD *****************************
-#define USE_SPI_DEVICE_2 
+#define USE_SPI_DEVICE_2
 #define SPI2_SCK_PIN            PB13
 #define SPI2_MISO_PIN           PB14
 #define SPI2_MOSI_PIN           PB15

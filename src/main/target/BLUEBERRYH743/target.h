@@ -21,9 +21,9 @@
 #define TARGET_BOARD_IDENTIFIER "BB43"
 
 #if defined(BLUEBERRYH743HD)
-  #define USBD_PRODUCT_STRING     "BLUEBERRYH743HD"
+#define USBD_PRODUCT_STRING     "BLUEBERRYH743HD"
 #else
-  #define USBD_PRODUCT_STRING     "BLUEBERRYH743"
+#define USBD_PRODUCT_STRING     "BLUEBERRYH743"
 #endif
 
 #define USE_TARGET_CONFIG
@@ -71,15 +71,15 @@
 #define ICM42605_CS_PIN         PC13
 
 // *************** SPI2 OSD ***********************
-  #define USE_SPI_DEVICE_2
-  #define SPI2_SCK_PIN            PB13
-  #define SPI2_MISO_PIN           PB14
-  #define SPI2_MOSI_PIN           PB15
+#define USE_SPI_DEVICE_2
+#define SPI2_SCK_PIN            PB13
+#define SPI2_MISO_PIN           PB14
+#define SPI2_MOSI_PIN           PB15
 
 #if defined(BLUEBERRYH743)
-  #define USE_MAX7456
-  #define MAX7456_SPI_BUS         BUS_SPI2
-  #define MAX7456_CS_PIN          PB12
+#define USE_MAX7456
+#define MAX7456_SPI_BUS         BUS_SPI2
+#define MAX7456_CS_PIN          PB12
 #endif
 
 // *************** SPI3 SPARE for external RM3100 ***********
@@ -208,4 +208,3 @@
 #define MAX_PWM_OUTPUT_PORTS        15
 #define USE_DSHOT
 #define USE_ESC_SENSOR
-

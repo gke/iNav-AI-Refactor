@@ -42,7 +42,7 @@
 #include "flight/mixer_profile.h"
 
 #include "fc/config.h"
-#include "fc/control_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
@@ -454,13 +454,6 @@ static void updatePositionHeadingController_FW(timeUs_t currentTimeUs, timeDelta
     }
 
     if (isWaypointNavTrackingActive()) {
-        /* Cross-track controller state. Scoped here, not in the control branch, so the
-         * else branch can re-seed it while the controller is disengaged. */
-        static float crossTrackErrorRate;
-        static timeUs_t previousCrossTrackErrorUpdateTime;
-        static float previousCrossTrackError = 0.0f;
-        static pt1Filter_t fwCrossTrackErrorRateFilterState;
-
         /* Calculate cross track error */
         posControl.wpDistance = calculateDistanceToDestination(&posControl.activeWaypoint.pos);
 
@@ -473,6 +466,11 @@ static void updatePositionHeadingController_FW(timeUs_t currentTimeUs, timeDelta
 
         /* If waypoint tracking enabled force craft toward and closely track along waypoint course line */
         if (navConfig()->fw.wp_tracking_accuracy && !needToCalculateCircularLoiter) {
+            static float crossTrackErrorRate;
+            static timeUs_t previousCrossTrackErrorUpdateTime;
+            static float previousCrossTrackError = 0.0f;
+            static pt1Filter_t fwCrossTrackErrorRateFilterState;
+
             if ((currentTimeUs - previousCrossTrackErrorUpdateTime) >= HZ2US(20) && fabsf(previousCrossTrackError - navCrossTrackError) > 10.0f) {
                 const float crossTrackErrorDtSec =  US2S(currentTimeUs - previousCrossTrackErrorUpdateTime);
                 if (fabsf(previousCrossTrackError - navCrossTrackError) < 500.0f) {
@@ -499,13 +497,6 @@ static void updatePositionHeadingController_FW(timeUs_t currentTimeUs, timeDelta
                 adjustmentFactor = constrainf(adjustmentFactor, -limit, limit);
                 virtualTargetBearing = wrap_36000(posControl.activeWaypoint.bearing - adjustmentFactor);
             }
-        } else {
-            /* Keep state synced to the current error while not steering, so the
-             * controller re-engages cleanly on the next leg (no stale-data kick). */
-            previousCrossTrackError = navCrossTrackError;
-            previousCrossTrackErrorUpdateTime = currentTimeUs;
-            crossTrackErrorRate = 0.0f;
-            pt1FilterReset(&fwCrossTrackErrorRateFilterState, 0.0f);
         }
     }
     /*
@@ -866,7 +857,7 @@ void applyFixedWingEmergencyLandingController(timeUs_t currentTimeUs)
         rcCommand[YAW] = 0;
     } else {
         rcCommand[ROLL] = pidAngleToRcCommand(failsafeConfig()->failsafe_fw_roll_angle, pidProfile()->max_angle_inclination[FD_ROLL]);
-        rcCommand[YAW] = -pidRateToRcCommand(failsafeConfig()->failsafe_fw_yaw_rate, currentControlProfile->stabilized.rates[FD_YAW]);
+        rcCommand[YAW] = -pidRateToRcCommand(failsafeConfig()->failsafe_fw_yaw_rate, currentControlRateProfile->stabilized.rates[FD_YAW]);
     }
 }
 

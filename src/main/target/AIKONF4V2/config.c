@@ -22,6 +22,5 @@
 
 #include "drivers/pwm_mapping.h"
 
-void targetConfiguration(void)
-{
-}
+void targetConfiguration(void) {
+} // targetConfiguration

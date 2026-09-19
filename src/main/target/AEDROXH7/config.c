@@ -28,8 +28,7 @@
 #include "io/serial.h"
 #include "io/piniobox.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     // GPS on UART2
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].functionMask = FUNCTION_GPS;
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].gps_baudrateIndex = BAUD_115200;
@@ -49,4 +48,4 @@ void targetConfiguration(void)
 
     // Enable PWM drive for passive beeper on PA7 / TIM3_CH2
     beeperConfigMutable()->pwmMode = true;
-}
+} // targetConfiguration

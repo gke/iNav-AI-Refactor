@@ -39,7 +39,7 @@
 #define SPI1_SCK_PIN            PA5
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PD7
-   
+
 #define SPI1_NSS_PIN            PC15
 #define SPI1_EXTI_PIN           PB2
 
@@ -111,7 +111,7 @@
 #define SPI3_SCK_PIN            PB3
 #define SPI3_MISO_PIN           PB4
 #define SPI3_MOSI_PIN           PB5
- 
+
 #define SPI3_SCK_AF GPIO_AF6_SPI3
 #define SPI3_MISO_AF GPIO_AF6_SPI3
 #define SPI3_MOSI_AF GPIO_AF7_SPI3

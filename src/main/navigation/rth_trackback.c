@@ -153,11 +153,10 @@ bool rthTrackBackSetNewPosition(void)
             rth_trackback.activePointIndex = NAV_RTH_TRACKBACK_POINTS - 1;
         }
 
-        // Last trackback point reached when activePointIndex = WrapAroundCounter so only set position when not equal
-        if (rth_trackback.activePointIndex != rth_trackback.WrapAroundCounter) {
-            calculateAndSetActiveWaypointToLocalPosition(getRthTrackBackPosition());
-        } else {
-            rth_trackback.activePointIndex = -1;  // if not already = -1 set to -1 to end trackback next iteration
+        calculateAndSetActiveWaypointToLocalPosition(getRthTrackBackPosition());
+
+        if (rth_trackback.activePointIndex - rth_trackback.WrapAroundCounter == 0) {
+            rth_trackback.WrapAroundCounter = rth_trackback.activePointIndex = -1;
         }
     } else {
         setDesiredPosition(getRthTrackBackPosition(), 0, NAV_POS_UPDATE_XY | NAV_POS_UPDATE_Z | NAV_POS_UPDATE_BEARING);

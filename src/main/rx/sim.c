@@ -32,7 +32,6 @@
 static uint16_t channels[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 static bool hasNewData = false;
 static uint16_t rssi = 0;
-static volatile bool isFailsafe = false;
 
 static uint16_t rxSimReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfigPtr, uint8_t chan) {
     UNUSED(rxRuntimeConfigPtr);
@@ -57,11 +56,6 @@ static uint8_t rxSimFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig) {
     }
 
     hasNewData = false;
-
-    if (isFailsafe) {
-        return RX_FRAME_COMPLETE | RX_FRAME_FAILSAFE;
-    }
-
     return RX_FRAME_COMPLETE;
 }
 
@@ -74,11 +68,7 @@ void rxSimInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig) {
     rxRuntimeConfig->rcFrameStatusFn = rxSimFrameStatus;
 }
 
-void rxSimSetRssi(const uint16_t value) {
+void rxSimSetRssi(uint16_t value) {
     rssi = value;
-}
-
-void rxSimSetFailsafe(const bool value) {
-    isFailsafe = value;
 }
 #endif

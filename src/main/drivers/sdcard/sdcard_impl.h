@@ -32,7 +32,6 @@
 
 #define SDCARD_TIMEOUT_INIT_MILLIS                  200
 #define SDCARD_MAX_CONSECUTIVE_FAILURES             8
-#define SDCARD_MAX_OPERATION_RETRIES                3
 
 typedef enum {
     // In these states we run at the initialization 400kHz clockspeed:
@@ -63,7 +62,6 @@ typedef struct sdcard_t {
     uint32_t operationStartTime;
 
     uint8_t failureCount;
-    uint8_t operationRetries;  // Retry count for current operation before reset
 
     uint8_t version;
     bool highCapacity;

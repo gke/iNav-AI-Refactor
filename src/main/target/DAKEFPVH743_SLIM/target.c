@@ -15,20 +15,20 @@
  * along with INAV.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include <stdint.h>
+#include <stdint.h>
 
- #include <platform.h>
- #include "drivers/io.h"
- #include "drivers/pwm_mapping.h"
- #include "drivers/timer.h"
- #include "drivers/bus.h"
- #include "drivers/sensor.h"
- 
- #include "drivers/pwm_output.h"
- #include "common/maths.h"
- #include "fc/config.h"
- // Board hardware definitions - IMU1 slot
- 
+#include <platform.h>
+#include "drivers/io.h"
+#include "drivers/pwm_mapping.h"
+#include "drivers/timer.h"
+#include "drivers/bus.h"
+#include "drivers/sensor.h"
+
+#include "drivers/pwm_output.h"
+#include "common/maths.h"
+#include "fc/config.h"
+// Board hardware definitions - IMU1 slot
+
 BUSDEV_REGISTER_SPI_TAG(busdev_1_mpu6000,   DEVHW_MPU6000,  IMU_1_SPI_BUS,  IMU_1_CS_PIN,   IMU_1_IRQ_PIN,   0,  DEVFLAGS_NONE,  IMU_1_ALIGN);
 BUSDEV_REGISTER_SPI_TAG(busdev_1_mpu6500,   DEVHW_MPU6500,  IMU_1_SPI_BUS,  IMU_1_CS_PIN,   IMU_1_IRQ_PIN,   0,  DEVFLAGS_NONE,  IMU_1_ALIGN);
 BUSDEV_REGISTER_SPI_TAG(busdev_1_ICM42605,  DEVHW_ICM42605, IMU_1_SPI_BUS,  IMU_1_CS_PIN,   IMU_1_IRQ_PIN,   0,  DEVFLAGS_NONE,  IMU_1_ALIGN);

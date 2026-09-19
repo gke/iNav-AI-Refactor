@@ -26,8 +26,7 @@
 #include "drivers/serial.h"
 #include "io/serial.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
     pinioBoxConfigMutable()->permanentId[1] = BOX_PERMANENT_ID_USER2;
     pinioBoxConfigMutable()->permanentId[2] = findBoxByActiveBoxId(BOXARM)->permanentId;
@@ -35,4 +34,4 @@ void targetConfiguration(void)
     // UART2 is connected to an onboard Bluetooth module (not user-accessible)
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].functionMask = FUNCTION_MSP;
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].msp_baudrateIndex = BAUD_115200;
-}
+} // targetConfiguration

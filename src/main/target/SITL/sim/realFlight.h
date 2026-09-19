@@ -27,4 +27,3 @@
 #define RF_MAX_PWM_OUTS 12
 
 bool simRealFlightInit(char* ip, uint8_t* mapping, uint8_t mapCount, bool imu);
-void simRealFlightClose(void);

@@ -22,24 +22,22 @@ See the other documentation sections for details of the cli commands and setting
 
 ## Backup via CLI
 
-> **Note:** The INAV Configurator now performs automatic backups before flashing and can restore settings afterwards, including migration across major versions. See [Backup and Restore](Backup%20and%20Restore.md) for details. The CLI method below remains available for manual backup.
-
 Disconnect main power, connect to cli via USB/FTDI.
 
 dump using cli
 
 ```
-control_profile 0
+profile 0
 dump
 ```
 
-dump control_profiles using cli if you use them
+dump profiles using cli if you use them
 
 ```
-control_profile 1
-dump control_profile
-control_profile 2
-dump control_profile
+profile 1
+dump profile
+profile 2
+dump profile
 ```
 
 copy screen output to a file and save it.
@@ -73,7 +71,6 @@ While connected to the CLI, all Logical Switches are temporarily disabled (5.1.0
 | `batch` | Start or end a batch of commands |
 | `battery_profile` | Change battery profile |
 | `beeper` | Show/set beeper (buzzer) [usage](Buzzer.md) |
-| `bind_msp_rx` | Initiate binding for MSP receivers (mLRS) |
 | `bind_rx` | Initiate binding for SRXL2 or CRSF receivers |
 | `blackbox` | Configure blackbox fields |
 | `bootlog` | Show init logs from [serial_printf_debugging](./development/serial_printf_debugging.md) |
@@ -103,7 +100,7 @@ While connected to the CLI, all Logical Switches are temporarily disabled (5.1.0
 | `osd_layout` | Get or set the layout of OSD items |
 | `pid` | Configurable PID controllers |
 | `play_sound` | `<index>`, or none for next item |
-| `control_profile` | Change profile |
+| `profile` | Change profile |
 | `resource` | View currently used resources |
 | `rxrange` | Configure rx channel ranges |
 | `safehome` | Define safe home locations. See the [safehome documentation](Safehomes.md) for usage information. |

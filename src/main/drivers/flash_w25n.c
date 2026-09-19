@@ -30,7 +30,7 @@
 #include "drivers/time.h"
 
 #include "flash_w25n.h"
-     
+
 // Device size parameters
 #define W25N_PAGE_SIZE       2048
 #define W25N_PAGES_PER_BLOCK 64
@@ -132,56 +132,50 @@
 static busDevice_t *busDev = NULL;
 static flashGeometry_t geometry;
 
-/*
- * Whether we've performed an action that could have made the device busy for writes.
- *
- * This allows us to avoid polling for writable status when it is definitely ready already.
- */
+//
+// Whether we've performed an action that could have made the device busy for writes.
+//
+// This allows us to avoid polling for writable status when it is definitely ready already.
+//
 static bool couldBeBusy = false;
 
 static timeMs_t timeoutAt = 0;
 
 static bool w25n_waitForReadyInternal(void);
 
-static void w25n_setTimeout(timeMs_t timeoutMillis)
-{
+static void w25n_setTimeout(timeMs_t timeoutMillis) {
     timeMs_t now = millis();
     timeoutAt = now + timeoutMillis;
     couldBeBusy = true;
-}
+} // w25n_setTimeout
 
-/**
- * Send the given command byte to the device.
- */
-static void w25n_performOneByteCommand(uint8_t command)
-{
+//
+// Send the given command byte to the device.
+//
+static void w25n_performOneByteCommand(uint8_t command) {
     busTransfer(busDev, NULL, &command, 1);
-}
+} // w25n_performOneByteCommand
 
-static void w25n_performCommandWithPageAddress(uint8_t command, uint32_t pageAddress)
-{
+static void w25n_performCommandWithPageAddress(uint8_t command, uint32_t pageAddress) {
     uint8_t cmd[4] = { command, 0, (pageAddress >> 8) & 0xff, (pageAddress >> 0) & 0xff};
     busTransfer(busDev, NULL, cmd, sizeof(cmd));
-}
+} // w25n_performCommandWithPageAddress
 
-static uint8_t w25n_readRegister(uint8_t reg)
-{
+static uint8_t w25n_readRegister(uint8_t reg) {
     uint8_t command[3] = { W25N_INSTRUCTION_READ_STATUS_REG, reg, 0 };
     uint8_t in[3];
 
     busTransfer(busDev, in, command, sizeof(command));
 
     return in[2];
-}
+} // w25n_readRegister
 
-static void w25n_writeRegister(uint8_t reg, uint8_t data)
-{
+static void w25n_writeRegister(uint8_t reg, uint8_t data) {
     uint8_t cmd[3] = { W25N_INSTRUCTION_WRITE_STATUS_REG, reg, data };
     busTransfer(busDev, NULL, cmd, sizeof(cmd));
-}
+} // w25n_writeRegister
 
-static void w25n_deviceReset(void)
-{
+static void w25n_deviceReset(void) {
     w25n_performOneByteCommand(W25N_INSTRUCTION_DEVICE_RESET);
     w25n_setTimeout(W25N_TIMEOUT_RESET_MS);
     w25n_waitForReadyInternal();
@@ -192,50 +186,43 @@ static void w25n_deviceReset(void)
     w25n_writeRegister(W25N_PROT_REG, W25N_PROT_CLEAR);
     // Buffered read mode (BUF = 1), ECC enabled (ECC = 1)
     w25n_writeRegister(W25N_CONF_REG, W25N_CONFIG_ECC_ENABLE | W25N_CONFIG_BUFFER_READ_MODE);
-}
+} // w25n_deviceReset
 
-bool w25n_isReady(void)
-{
+bool w25n_isReady(void) {
     uint8_t status = w25n_readRegister(W25N_STAT_REG);
 
     // If couldBeBusy is false, don't bother to poll the flash chip for its status
     couldBeBusy = couldBeBusy && ((status & W25N_STATUS_FLAG_BUSY) != 0);
 
     return !couldBeBusy;
-}
+} // w25n_isReady
 
-static bool w25n_waitForReadyInternal(void)
-{
+static bool w25n_waitForReadyInternal(void) {
     while (!w25n_isReady()) {
         timeMs_t now = millis();
-        if (cmp32(now, timeoutAt) >= 0) {
-            return false;
-        }
+        if (cmp32(now, timeoutAt) >= 0) return false;;
     }
     timeoutAt = 0;
     return true;
-}
+} // w25n_waitForReadyInternal
 
-bool w25n_waitForReady(timeMs_t timeoutMillis)
-{
+bool w25n_waitForReady(timeMs_t timeoutMillis) {
     w25n_setTimeout(timeoutMillis);
     return w25n_waitForReadyInternal();
-}
+} // w25n_waitForReady
 
-/**
- * The flash requires this write enable command to be sent before commands that would cause
- * a write like program and erase.
- */
-static void w25n_writeEnable(void)
-{
+//
+// The flash requires this write enable command to be sent before commands that would cause
+// a write like program and erase.
+//
+static void w25n_writeEnable(void) {
     w25n_performOneByteCommand(W25N_INSTRUCTION_WRITE_ENABLE);
 
     // Assume that we're about to do some writing, so the device is just about to become busy
     couldBeBusy = true;
-}
+} // w25n_writeEnable
 
-bool w25n_detect(uint32_t chipID)
-{
+bool w25n_detect(uint32_t chipID) {
     switch (chipID) {
     case JEDEC_ID_WINBOND_W25N01GV:
         geometry.sectors = W25N01GV_BLOCKS_PER_DIE;      // Blocks
@@ -272,10 +259,10 @@ bool w25n_detect(uint32_t chipID)
     geometry.flashType = FLASH_TYPE_NAND;
     geometry.sectorSize = geometry.pagesPerSector * geometry.pageSize;
     geometry.totalSize = geometry.sectorSize * geometry.sectors;
-    
-    /*flashPartitionSet(FLASH_PARTITION_TYPE_BADBLOCK_MANAGEMENT,
-            W25N_BB_MANAGEMENT_START_BLOCK,
-            W25N_BB_MANAGEMENT_START_BLOCK + W25N_BB_MANAGEMENT_BLOCKS - 1);*/
+
+    // flashPartitionSet(FLASH_PARTITION_TYPE_BADBLOCK_MANAGEMENT,
+    // W25N_BB_MANAGEMENT_START_BLOCK,
+    // W25N_BB_MANAGEMENT_START_BLOCK + W25N_BB_MANAGEMENT_BLOCKS - 1);
 
     couldBeBusy = true; // Just for luck we'll assume the chip could be busy even though it isn't specced to be
 
@@ -293,30 +280,25 @@ bool w25n_detect(uint32_t chipID)
     // If it ever run out, the device becomes unusable.
 
     return true;
-}
+} // w25n_detect
 
-/**
- * Erase a sector full of bytes to all 1's at the given byte offset in the flash chip.
- */
-void w25n_eraseSector(uint32_t address)
-{
+//
+// Erase a sector full of bytes to all 1's at the given byte offset in the flash chip.
+//
+void w25n_eraseSector(uint32_t address) {
     w25n_waitForReadyInternal();
     w25n_writeEnable();
     w25n_performCommandWithPageAddress(W25N_INSTRUCTION_BLOCK_ERASE, W25N_LINEAR_TO_PAGE(address));
     w25n_setTimeout(W25N_TIMEOUT_BLOCK_ERASE_MS);
-}
+} // w25n_eraseSector
 
 // W25N does not support full chip erase.
 // Call eraseSector repeatedly.
-void w25n_eraseCompletely(void)
-{
-    for (uint32_t block = 0; block < geometry.sectors; block++) {
-        w25n_eraseSector(W25N_BLOCK_TO_LINEAR(block));
-    }
-}
+void w25n_eraseCompletely(void) {
+    for (uint32_t block = 0; block < geometry.sectors; block++) w25n_eraseSector(W25N_BLOCK_TO_LINEAR(block));;
+} // w25n_eraseCompletely
 
-static void w25n_programDataLoad(uint16_t columnAddress, const uint8_t *data, int length)
-{
+static void w25n_programDataLoad(uint16_t columnAddress, const uint8_t *data, int length) {
     w25n_waitForReadyInternal();
 
     uint8_t cmd[3] = {W25N_INSTRUCTION_PROGRAM_DATA_LOAD, columnAddress >> 8, columnAddress & 0xff};
@@ -325,10 +307,9 @@ static void w25n_programDataLoad(uint16_t columnAddress, const uint8_t *data, in
     busTransferMultiple(busDev, transferDescr, ARRAYLEN(transferDescr));
 
     w25n_setTimeout(W25N_TIMEOUT_PAGE_PROGRAM_MS);
-}
+} // w25n_programDataLoad
 
-static void w25n_randomProgramDataLoad(uint16_t columnAddress, const uint8_t *data, int length)
-{
+static void w25n_randomProgramDataLoad(uint16_t columnAddress, const uint8_t *data, int length) {
     w25n_waitForReadyInternal();
 
     uint8_t cmd[3] = {W25N_INSTRUCTION_RANDOM_PROGRAM_DATA_LOAD, columnAddress >> 8, columnAddress & 0xff};
@@ -337,14 +318,13 @@ static void w25n_randomProgramDataLoad(uint16_t columnAddress, const uint8_t *da
     busTransferMultiple(busDev, transferDescr, ARRAYLEN(transferDescr));
 
     w25n_setTimeout(W25N_TIMEOUT_PAGE_PROGRAM_MS);
-}
+} // w25n_randomProgramDataLoad
 
-static void w25n_programExecute(uint32_t pageAddress)
-{
+static void w25n_programExecute(uint32_t pageAddress) {
     w25n_waitForReadyInternal();
     w25n_performCommandWithPageAddress(W25N_INSTRUCTION_PROGRAM_EXECUTE, pageAddress);
     w25n_setTimeout(W25N_TIMEOUT_PAGE_PROGRAM_MS);
-}
+} // w25n_programExecute
 
 // Writes are done in three steps:
 // (1) Load internal data buffer with data to write
@@ -354,33 +334,32 @@ static void w25n_programExecute(uint32_t pageAddress)
 // (2) Enable write
 // (3) Issue "Execute Program"
 //
-/*
-flashfs page program behavior
-- Single program never crosses page boundary.
-- Except for this characteristic, it program arbitral size.
-- Write address is, naturally, not a page boundary.
-To cope with this behavior.
-pageProgramBegin:
-If buffer is dirty and programLoadAddress != address, then the last page is a partial write;
-issue PAGE_PROGRAM_EXECUTE to flash buffer contents, clear dirty and record the address as programLoadAddress and programStartAddress.
-Else do nothing.
-pageProgramContinue:
-Mark buffer as dirty.
-If programLoadAddress is on page boundary, then issue PROGRAM_LOAD_DATA, else issue RANDOM_PROGRAM_LOAD_DATA.
-Update programLoadAddress.
-Optionally observe the programLoadAddress, and if it's on page boundary, issue PAGE_PROGRAM_EXECUTE.
-pageProgramFinish:
-Observe programLoadAddress. If it's on page boundary, issue PAGE_PROGRAM_EXECUTE and clear dirty, else just return.
-If pageProgramContinue observes the page boundary, then do nothing(?).
-*/
+//
+// flashfs page program behavior
+// - Single program never crosses page boundary.
+// - Except for this characteristic, it program arbitral size.
+// - Write address is, naturally, not a page boundary.
+// To cope with this behavior.
+// pageProgramBegin:
+// If buffer is dirty and programLoadAddress != address, then the last page is a partial write;
+// issue PAGE_PROGRAM_EXECUTE to flash buffer contents, clear dirty and record the address as programLoadAddress and programStartAddress.
+// Else do nothing.
+// pageProgramContinue:
+// Mark buffer as dirty.
+// If programLoadAddress is on page boundary, then issue PROGRAM_LOAD_DATA, else issue RANDOM_PROGRAM_LOAD_DATA.
+// Update programLoadAddress.
+// Optionally observe the programLoadAddress, and if it's on page boundary, issue PAGE_PROGRAM_EXECUTE.
+// pageProgramFinish:
+// Observe programLoadAddress. If it's on page boundary, issue PAGE_PROGRAM_EXECUTE and clear dirty, else just return.
+// If pageProgramContinue observes the page boundary, then do nothing(?).
+//
 bool bufferDirty = false;
 bool isProgramming = false;
 static uint32_t programStartAddress;
 static uint32_t programLoadAddress;
 static uint32_t currentPage = UINT32_MAX;
 
-void w25n_pageProgramBegin(uint32_t address)
-{
+void w25n_pageProgramBegin(uint32_t address) {
     if (bufferDirty) {
         if (address != programLoadAddress) {
             w25n_waitForReadyInternal();
@@ -390,29 +369,21 @@ void w25n_pageProgramBegin(uint32_t address)
             bufferDirty = false;
             isProgramming = true;
         }
-    } else {
-        programStartAddress = programLoadAddress = address;
-    }
-}
+    } else programStartAddress = programLoadAddress = address;;
+} // w25n_pageProgramBegin
 
-void w25n_pageProgramContinue(const uint8_t *data, int length)
-{
+void w25n_pageProgramContinue(const uint8_t *data, int length) {
     // Check for page boundary overrun
     w25n_waitForReadyInternal();
     w25n_writeEnable();
     isProgramming = false;
-    if (!bufferDirty) {
-        w25n_programDataLoad(W25N_LINEAR_TO_COLUMN(programLoadAddress), (uint8_t *)data, length);
-    } else {
-        w25n_randomProgramDataLoad(W25N_LINEAR_TO_COLUMN(programLoadAddress), (uint8_t *)data, length);
-    }
+    if (!bufferDirty) w25n_programDataLoad(W25N_LINEAR_TO_COLUMN(programLoadAddress), (uint8_t *)data, length);
     // XXX Test if write enable is reset after each data loading.
     bufferDirty = true;
     programLoadAddress += length;
-}
+} // w25n_pageProgramContinue
 
-void w25n_pageProgramFinish(void)
-{
+void w25n_pageProgramFinish(void) {
     if (bufferDirty && W25N_LINEAR_TO_COLUMN(programLoadAddress) == 0) {
         currentPage = W25N_LINEAR_TO_PAGE(programStartAddress); // reset page to the page being written
         w25n_programExecute(W25N_LINEAR_TO_PAGE(programStartAddress));
@@ -420,58 +391,53 @@ void w25n_pageProgramFinish(void)
         isProgramming = true;
         programStartAddress = programLoadAddress;
     }
-}
+} // w25n_pageProgramFinish
 
-/*
- * Write bytes to a flash page. Address must not cross a page boundary.
- *
- * Bits can only be set to zero, not from zero back to one again. In order to set bits to 1, use the erase command.
- *
- * Length must be smaller than the page size.
- *
- * This will wait for the flash to become ready before writing begins.
- *
- * Datasheet indicates typical programming time is 0.8ms for 256 bytes, 0.2ms for 64 bytes, 0.05ms for 16 bytes.
- * (Although the maximum possible write time is noted as 5ms).
- *
- * If you want to write multiple buffers (whose sum of sizes is still not more than the page size) then you can
- * break this operation up into one beginProgram call, one or more continueProgram calls, and one finishProgram call.
- */
-uint32_t w25n_pageProgram(uint32_t address, const uint8_t *data, int length)
-{
+//
+// Write bytes to a flash page. Address must not cross a page boundary.
+//
+// Bits can only be set to zero, not from zero back to one again. In order to set bits to 1, use the erase command.
+//
+// Length must be smaller than the page size.
+//
+// This will wait for the flash to become ready before writing begins.
+//
+// Datasheet indicates typical programming time is 0.8ms for 256 bytes, 0.2ms for 64 bytes, 0.05ms for 16 bytes.
+// (Although the maximum possible write time is noted as 5ms).
+//
+// If you want to write multiple buffers (whose sum of sizes is still not more than the page size) then you can
+// break this operation up into one beginProgram call, one or more continueProgram calls, and one finishProgram call.
+//
+uint32_t w25n_pageProgram(uint32_t address, const uint8_t *data, int length) {
     w25n_pageProgramBegin(address);
     w25n_pageProgramContinue((uint8_t *)data, length);
     w25n_pageProgramFinish();
 
     return address + length;
-}
+} // w25n_pageProgram
 
-void w25n_flush(void)
-{
+void w25n_flush(void) {
     if (bufferDirty) {
         currentPage = W25N_LINEAR_TO_PAGE(programStartAddress); // reset page to the page being written
         w25n_programExecute(W25N_LINEAR_TO_PAGE(programStartAddress));
         bufferDirty = false;
         isProgramming = true;
-    } else {
-        isProgramming = false;
-    }
-}
+    } else isProgramming = false;;
+} // w25n_flush
 
-void w25n_addError(uint32_t address, uint8_t code)
-{
+void w25n_addError(uint32_t address, uint8_t code) {
     UNUSED(address);
     UNUSED(code);
-}
+} // w25n_addError
 
-/*
- * Read `length` bytes into the provided `buffer` from the flash starting from the given `address` (which need not lie
- * on a page boundary).
- *
- * Waits up to W25N_TIMEOUT_PAGE_READ_MS milliseconds for the flash to become ready before reading.
- *
- * The number of bytes actually read is returned, which can be zero if an error or timeout occurred.
- */
+//
+// Read `length` bytes into the provided `buffer` from the flash starting from the given `address` (which need not lie
+// on a page boundary).
+//
+// Waits up to W25N_TIMEOUT_PAGE_READ_MS milliseconds for the flash to become ready before reading.
+//
+// The number of bytes actually read is returned, which can be zero if an error or timeout occurred.
+//
 // Continuous read mode (BUF = 0):
 // (1) "Page Data Read" command is executed for the page pointed by address
 // (2) "Read Data" command is executed for bytes not requested and data are discarded
@@ -482,39 +448,28 @@ void w25n_addError(uint32_t address, uint8_t code)
 // (2) Compute transferLength as smaller of remaining length and requested length.
 // (3) Issue READ_DATA on column address.
 // (4) Return transferLength.
-int w25n_readBytes(uint32_t address, uint8_t *buffer, int length)
-{
+int w25n_readBytes(uint32_t address, uint8_t *buffer, int length) {
     uint32_t targetPage = W25N_LINEAR_TO_PAGE(address);
 
     if (currentPage != targetPage) {
-        if (!w25n_waitForReadyInternal()) {
-            return 0;
-        }
+        if (!w25n_waitForReadyInternal()) return 0;;
         currentPage = UINT32_MAX;
         w25n_performCommandWithPageAddress(W25N_INSTRUCTION_PAGE_DATA_READ, targetPage);
-        if (!w25n_waitForReady(W25N_TIMEOUT_PAGE_READ_MS)) {
-            return 0;
-        }
+        if (!w25n_waitForReady(W25N_TIMEOUT_PAGE_READ_MS)) return 0;;
         currentPage = targetPage;
     }
 
     uint16_t column = W25N_LINEAR_TO_COLUMN(address);
     uint16_t transferLength;
 
-    if (length > W25N_PAGE_SIZE - column) {
-        transferLength = W25N_PAGE_SIZE - column;
-    } else {
-        transferLength = length;
-    }
+    if (length > W25N_PAGE_SIZE - column) transferLength = W25N_PAGE_SIZE - column;
 
     const uint8_t cmd[4] = {W25N_INSTRUCTION_READ_DATA, (column >> 8) & 0xff, (column >> 0) & 0xff, 0};
 
     busTransferDescriptor_t readDescr[] = {{.length = sizeof(cmd), .rxBuf = NULL, .txBuf = cmd}, {.length = transferLength, .rxBuf = buffer, .txBuf = NULL}};
     busTransferMultiple(busDev, readDescr, ARRAYLEN(readDescr));
 
-    if (!w25n_waitForReady(W25N_TIMEOUT_PAGE_READ_MS)) {
-        return 0;
-    }
+    if (!w25n_waitForReady(W25N_TIMEOUT_PAGE_READ_MS)) return 0;;
 
     // Check ECC
     uint8_t statReg = w25n_readRegister(W25N_STAT_REG);
@@ -532,25 +487,21 @@ int w25n_readBytes(uint32_t address, uint8_t *buffer, int length)
     }
 
     return transferLength;
-}
+} // w25n_readBytes
 
-/**
- * Fetch information about the detected flash chip layout.
- *
- * Can be called before calling w25n_init() (the result would have totalSize = 0).
- */
-const flashGeometry_t* w25n_getGeometry(void)
-{
+//
+// Fetch information about the detected flash chip layout.
+//
+// Can be called before calling w25n_init() (the result would have totalSize = 0).
+//
+const flashGeometry_t* w25n_getGeometry(void) {
     return &geometry;
-}
+} // w25n_getGeometry
 
-bool w25n_init(int flashNumToUse)
-{
+bool w25n_init(int flashNumToUse) {
     busDev = busDeviceInit(BUSTYPE_SPI, DEVHW_W25N, flashNumToUse, OWNER_FLASH);
-    if (busDev == NULL) {
-        return false;
-    }
-    
+    if (busDev == NULL) return false;;
+
     uint8_t in[4] = { 0 };
     uint32_t chipID;
 
@@ -561,6 +512,6 @@ bool w25n_init(int flashNumToUse)
     chipID = (in[1] << 16) | (in[2] << 8) | (in[3]);
 
     return w25n_detect(chipID);
-}
+} // w25n_init
 
 #endif

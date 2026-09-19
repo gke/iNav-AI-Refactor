@@ -109,8 +109,6 @@
 #define OSD_MSG_AUTOLAUNCH          "AUTOLAUNCH"
 #define OSD_MSG_AUTOLAUNCH_MANUAL   "AUTOLAUNCH (MANUAL)"
 #define OSD_MSG_ALTITUDE_HOLD       "(ALTITUDE HOLD)"
-#define OSD_MSG_SURFACE_OK          "(SURFACE)"
-#define OSD_MSG_SURFACE_BAD         "(!SURFACE UNRELIABLE!)"
 #define OSD_MSG_AUTOTRIM            "(AUTOTRIM)"
 #define OSD_MSG_AUTOTUNE            "(AUTOTUNE)"
 #define OSD_MSG_AUTOTUNE_ACRO       "SWITCH TO ACRO"
@@ -341,7 +339,6 @@ typedef enum {
     OSD_V_DIST_TO_FENCE,
     OSD_NAV_FW_ALT_CONTROL_RESPONSE,
     OSD_NAV_MIN_GROUND_SPEED,
-    OSD_THROTTLE_GAUGE,
     OSD_ITEM_COUNT // MUST BE LAST
 } osd_items_e;
 
@@ -505,7 +502,7 @@ typedef struct osdConfig_s {
     uint8_t         right_sidebar_scroll_step;          // Same as left_sidebar_scroll_step, but for the right sidebar.
     bool            osd_home_position_arm_screen;
     uint8_t         pan_servo_index;                    // Index of the pan servo used for home direction offset
-    int8_t          osd_pan_servo_range_decadegrees;    // Decadegrees of servo rotation
+    int8_t          pan_servo_pwm2centideg;             // Centidegrees of servo rotation per us pwm
     uint8_t         pan_servo_offcentre_warning;        // Degrees around the centre, that is assumed camera is wanted to be facing forwards, but isn't centred
     bool            pan_servo_indicator_show_degrees;   // Show the degrees of offset for the pan servo
     uint8_t         crsf_lq_format;
@@ -549,10 +546,6 @@ PG_DECLARE(osdConfig_t, osdConfig);
 typedef struct displayPort_s displayPort_t;
 typedef struct displayCanvas_s displayCanvas_t;
 
-void osdDrawCustomItem(uint8_t item);
-void osdEraseCustomItem(uint8_t item);
-unsigned getCurrentLayout(void);
-
 void osdInit(displayPort_t *osdDisplayPort);
 bool osdDisplayIsPAL(void);
 void osdUpdate(timeUs_t currentTimeUs);
@@ -586,6 +579,8 @@ void osdFormatAltitudeSymbol(char *buff, int32_t alt);
 int osdFormatVelocityStr(char* buff, int32_t vel, osd_SpeedTypes_e speedType, bool _max);
 // Returns a heading angle in degrees normalized to [0, 360).
 int osdGetHeadingAngle(int angle);
+
+void osdResetWarningFlags(void);
 
 int16_t osdGetPanServoOffset(void);
 

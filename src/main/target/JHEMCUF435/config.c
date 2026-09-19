@@ -28,8 +28,7 @@
 
 #include "io/serial.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].functionMask = FUNCTION_RX_SERIAL;
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART7)].functionMask = FUNCTION_ESCSERIAL;
-}
+} // targetConfiguration

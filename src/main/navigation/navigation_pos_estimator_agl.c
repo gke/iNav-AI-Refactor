@@ -49,15 +49,24 @@ extern navigationPosEstimator_t posEstimator;
 void updatePositionEstimator_SurfaceTopic(timeUs_t currentTimeUs, float newSurfaceAlt)
 {
     const float surfaceDtUs = currentTimeUs - posEstimator.surface.lastUpdateTime;
-    uint8_t newReliabilityMeasurement = 0;  // default to 0 for negative values, out of range or failed hardware
+    float newReliabilityMeasurement = 0;
     bool surfaceMeasurementWithinRange = false;
 
     posEstimator.surface.lastUpdateTime = currentTimeUs;
 
-    if (newSurfaceAlt >= 0 && newSurfaceAlt <= positionEstimationConfig()->max_surface_altitude) {
-        newReliabilityMeasurement = 1;
-        surfaceMeasurementWithinRange = true;
-        posEstimator.surface.alt = newSurfaceAlt;
+    if (newSurfaceAlt >= 0) {
+        if (newSurfaceAlt <= positionEstimationConfig()->max_surface_altitude) {
+            newReliabilityMeasurement = 1.0f;
+            surfaceMeasurementWithinRange = true;
+            posEstimator.surface.alt = newSurfaceAlt;
+        }
+        else {
+            newReliabilityMeasurement = 0.0f;
+        }
+    }
+    else {
+        // Negative values - out of range or failed hardware
+        newReliabilityMeasurement = 0.0f;
     }
 
     /* Reliability is a measure of confidence of rangefinder measurement. It's increased with each valid sample and decreased with each invalid sample */
@@ -140,7 +149,7 @@ void estimationCalculateAGL(estimationContext_t * ctx)
         // Update estimate
         posEstimator.est.aglAlt += posEstimator.est.aglVel * ctx->dt;
         posEstimator.est.aglAlt += posEstimator.imu.accelNEU.z * sq(ctx->dt) / 2.0f * posEstimator.imu.accWeightFactor;
-        posEstimator.est.aglVel += posEstimator.imu.accelNEU.z * ctx->dt * posEstimator.imu.accWeightFactor;
+        posEstimator.est.aglVel += posEstimator.imu.accelNEU.z * ctx->dt * sq(posEstimator.imu.accWeightFactor);
 
         // Apply correction
         if (posEstimator.est.aglQual == SURFACE_QUAL_HIGH) {

@@ -24,11 +24,10 @@
 #include "io/piniobox.h"
 #include "io/serial.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
     pinioBoxConfigMutable()->permanentId[1] = BOX_PERMANENT_ID_USER2;
 
     // UART5 is RX-only and hard-wired to ESC telemetry
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART5)].functionMask = FUNCTION_ESCSERIAL;
-}
+} // targetConfiguration

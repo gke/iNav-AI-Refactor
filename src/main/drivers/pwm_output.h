@@ -50,7 +50,6 @@ void pwmWriteServo(uint8_t index, uint16_t value);
 
 void pwmDisableMotors(void);
 void pwmEnableMotors(void);
-void pwmSetMotorDMACircular(bool circular);
 struct timerHardware_s;
 
 void pwmMotorPreconfigure(void);

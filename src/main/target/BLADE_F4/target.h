@@ -22,13 +22,13 @@
 
 #define USE_TARGET_CONFIG
 
-/*** Indicators ***/
+// ** Indicators **
 #define LED0                    PC15
 #define LED1                    PC14
 #define BEEPER                  PC13
 #define BEEPER_INVERTED
 
-/*** SPI/I2C bus ***/
+// ** SPI/I2C bus **
 #define USE_SPI
 #define USE_SPI_DEVICE_1
 #define SPI1_NSS_PIN            PA4
@@ -51,11 +51,11 @@
 
 #define USE_I2C
 #define USE_I2C_DEVICE_1
-#define I2C1_SCL                PB8      
-#define I2C1_SDA                PB9 
+#define I2C1_SCL                PB8
+#define I2C1_SDA                PB9
 
 
-/*** IMU sensors ***/
+// ** IMU sensors **
 
 // MPU6000
 #define USE_IMU_MPU6000
@@ -77,12 +77,12 @@
 #define BMI270_CS_PIN           SPI1_NSS_PIN
 
 
-/*** OSD ***/
+// ** OSD **
 #define USE_MAX7456
 #define MAX7456_SPI_BUS         BUS_SPI2
 #define MAX7456_CS_PIN          SPI2_NSS_PIN
 
-/*** Onboard flash ***/
+// ** Onboard flash **
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
 #define M25P16_CS_PIN           SPI2_FLASH_PIN
@@ -95,7 +95,7 @@
 #define PINIO1_PIN              PC2
 #define PINIO2_PIN              PC5
 
-/*** Serial ports ***/
+// ** Serial ports **
 #define USE_VCP
 #define USE_UART_INVERTER
 
@@ -126,7 +126,7 @@
 
 #define SERIAL_PORT_COUNT       7
 
-/*** BARO & MAG ***/
+// ** BARO & MAG **
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
 #define USE_BARO_BMP280
@@ -137,7 +137,7 @@
 #define MAG_I2C_BUS             BUS_I2C1
 #define USE_MAG_ALL
 
-/*** ADC ***/
+// ** ADC **
 #define USE_ADC
 #define ADC_CHANNEL_1_PIN               PC1
 #define ADC_CHANNEL_2_PIN               PC3
@@ -147,11 +147,11 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_2
 
 
-/*** LED STRIP ***/
+// ** LED STRIP **
 #define USE_LED_STRIP
 #define WS2811_PIN                      PB3
- 
-/*** Default settings ***/
+
+// ** Default settings **
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 #define DEFAULT_RX_TYPE                 RX_TYPE_SERIAL
 #define SERIALRX_PROVIDER               SERIALRX_SBUS
@@ -160,7 +160,7 @@
 
 #define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_OSD | FEATURE_CURRENT_METER | FEATURE_VBAT | FEATURE_TELEMETRY )
 
-/*** Timer/PWM output ***/
+// ** Timer/PWM output **
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 #define MAX_PWM_OUTPUT_PORTS            8
 #define USE_DSHOT
@@ -172,7 +172,7 @@
 #define USE_OPFLOW
 #define USE_OPFLOW_MSP
 
-/*** Used pins ***/
+// ** Used pins **
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff

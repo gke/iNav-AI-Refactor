@@ -23,14 +23,13 @@
 #include "flight/mixer_profile.h"
 #include "io/piniobox.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
     pinioBoxConfigMutable()->permanentId[0] = BOX_PERMANENT_ID_USER1;
     pinioBoxConfigMutable()->permanentId[1] = BOX_PERMANENT_ID_USER2;
 
-	// S1 and S2 are not as readily accessible, set default mixer to skip them
-	timerOverridesMutable(timer2id(TIM8))->outputMode = OUTPUT_MODE_SERVOS;
-	timerOverridesMutable(timer2id(TIM2))->outputMode = OUTPUT_MODE_SERVOS;
+    // S1 and S2 are not as readily accessible, set default mixer to skip them
+    timerOverridesMutable(timer2id(TIM8))->outputMode = OUTPUT_MODE_SERVOS;
+    timerOverridesMutable(timer2id(TIM2))->outputMode = OUTPUT_MODE_SERVOS;
     timerOverridesMutable(timer2id(TIM1))->outputMode = OUTPUT_MODE_MOTORS;
 
     *primaryMotorMixerMutable(0) = (motorMixer_t){ 1.0f, 0.0f, 0.0f, 0.0f };
@@ -41,4 +40,4 @@ void targetConfiguration(void)
     *customServoMixersMutable(3) = (servoMixer_t){ .targetChannel = 4, .inputSource =  0, .rate = 100, .speed = 0 };
     *customServoMixersMutable(4) = (servoMixer_t){ .targetChannel = 5, .inputSource =  0, .rate = 100, .speed = 0 };
     *customServoMixersMutable(5) = (servoMixer_t){ .targetChannel = 6, .inputSource =  2, .rate = 100, .speed = 0 };
-}
+} // targetConfiguration

@@ -345,9 +345,7 @@ void beeperUpdate(timeUs_t currentTimeUs)
     if (!beeperIsOn) {
 #ifdef USE_DSHOT
         if (isMotorProtocolDshot() && !areMotorsRunning() && beeperConfig()->dshot_beeper_enabled
-            && currentTimeUs - lastDshotBeeperCommandTimeUs > getDShotBeaconGuardDelayUs()
-            && currentBeeperEntry->sequence[beeperPos] != 0                   // added beeper timeout so dshot does not beep on "off"
-            && !(getBeeperOffMask() & (1 << (currentBeeperEntry->mode - 1)))) // added beeper ignore to dshot beacon
+            && currentTimeUs - lastDshotBeeperCommandTimeUs > getDShotBeaconGuardDelayUs())
         {
             lastDshotBeeperCommandTimeUs = currentTimeUs;
             sendDShotCommand(beeperConfig()->dshot_beeper_tone);

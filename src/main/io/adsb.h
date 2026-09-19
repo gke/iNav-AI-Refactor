@@ -64,5 +64,5 @@ uint8_t getActiveVehiclesCount(void);
 void adsbTtlClean(timeUs_t currentTimeUs);
 adsbVehicleStatus_t* getAdsbStatus(void);
 adsbVehicleValues_t* getVehicleForFill(void);
-bool isEnvironmentOkForCalculatingADSBDistanceBearing(void);
+bool enviromentOkForCalculatingDistaceBearing(void);
 void recalculateVehicle(adsbVehicle_t* vehicle);

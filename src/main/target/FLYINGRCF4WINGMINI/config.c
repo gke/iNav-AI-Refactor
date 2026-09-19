@@ -21,7 +21,6 @@
 #include "fc/config.h"
 #include "io/piniobox.h"
 
-void targetConfiguration(void)
-{
+void targetConfiguration(void) {
 
-}
+} // targetConfiguration

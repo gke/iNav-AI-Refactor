@@ -54,7 +54,7 @@
 #include "fc/fc_core.h"
 #include "fc/cli.h"
 #include "fc/config.h"
-#include "fc/control_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/multifunction.h"
 #include "fc/rc_adjustments.h"
 #include "fc/rc_smoothing.h"
@@ -177,7 +177,7 @@ bool areSensorsCalibrating(void)
     return false;
 }
 
-int16_t FAST_CODE getAxisRcCommand(int16_t rawData, int16_t rate, int16_t deadband)
+int16_t getAxisRcCommand(int16_t rawData, int16_t rate, int16_t deadband)
 {
     int16_t stickDeflection = 0;
 
@@ -390,31 +390,16 @@ static void processPilotAndFailSafeActions(float dT)
         failsafeApplyControlInput();
     }
     else {
-        // Compute ROLL PITCH and YAW command.
-        // Only recompute when the RX task has delivered new data (~50 Hz).
-        {
-            static int16_t cachedCmd[3] = {0, 0, 0};
-            if (isRXDataNew) {
-                cachedCmd[ROLL]  = getAxisRcCommand(rxGetChannelValue(ROLL),
-                    FLIGHT_MODE(MANUAL_MODE) ? currentControlProfile->manual.rcExpo8 : currentControlProfile->stabilized.rcExpo8,
-                    rcControlsConfig()->deadband);
-                cachedCmd[PITCH] = getAxisRcCommand(rxGetChannelValue(PITCH),
-                    FLIGHT_MODE(MANUAL_MODE) ? currentControlProfile->manual.rcExpo8 : currentControlProfile->stabilized.rcExpo8,
-                    rcControlsConfig()->deadband);
-                cachedCmd[YAW]   = -getAxisRcCommand(rxGetChannelValue(YAW),
-                    FLIGHT_MODE(MANUAL_MODE) ? currentControlProfile->manual.rcYawExpo8 : currentControlProfile->stabilized.rcYawExpo8,
-                    rcControlsConfig()->yaw_deadband);
-            }
-            rcCommand[ROLL]  = cachedCmd[ROLL];
-            rcCommand[PITCH] = cachedCmd[PITCH];
-            rcCommand[YAW]   = cachedCmd[YAW];
-        }
+        // Compute ROLL PITCH and YAW command
+        rcCommand[ROLL] = getAxisRcCommand(rxGetChannelValue(ROLL), FLIGHT_MODE(MANUAL_MODE) ? currentControlRateProfile->manual.rcExpo8 : currentControlRateProfile->stabilized.rcExpo8, rcControlsConfig()->deadband);
+        rcCommand[PITCH] = getAxisRcCommand(rxGetChannelValue(PITCH), FLIGHT_MODE(MANUAL_MODE) ? currentControlRateProfile->manual.rcExpo8 : currentControlRateProfile->stabilized.rcExpo8, rcControlsConfig()->deadband);
+        rcCommand[YAW] = -getAxisRcCommand(rxGetChannelValue(YAW), FLIGHT_MODE(MANUAL_MODE) ? currentControlRateProfile->manual.rcYawExpo8 : currentControlRateProfile->stabilized.rcYawExpo8, rcControlsConfig()->yaw_deadband);
 
         // Apply manual control rates
         if (FLIGHT_MODE(MANUAL_MODE)) {
-            rcCommand[ROLL] = rcCommand[ROLL] * currentControlProfile->manual.rates[FD_ROLL] / 100L;
-            rcCommand[PITCH] = rcCommand[PITCH] * currentControlProfile->manual.rates[FD_PITCH] / 100L;
-            rcCommand[YAW] = rcCommand[YAW] * currentControlProfile->manual.rates[FD_YAW] / 100L;
+            rcCommand[ROLL] = rcCommand[ROLL] * currentControlRateProfile->manual.rates[FD_ROLL] / 100L;
+            rcCommand[PITCH] = rcCommand[PITCH] * currentControlRateProfile->manual.rates[FD_PITCH] / 100L;
+            rcCommand[YAW] = rcCommand[YAW] * currentControlRateProfile->manual.rates[FD_YAW] / 100L;
         } else {
             DEBUG_SET(DEBUG_RATE_DYNAMICS, 0, rcCommand[ROLL]);
             rcCommand[ROLL] = applyRateDynamics(rcCommand[ROLL], ROLL, dT);
@@ -433,10 +418,8 @@ static void processPilotAndFailSafeActions(float dT)
         //Compute THROTTLE command
         rcCommand[THROTTLE] = throttleStickMixedValue();
 
-        // Signal updated rcCommand values to Failsafe system when new RC data arrived
-        if (isRXDataNew) {
-            failsafeUpdateRcCommandValues();
-        }
+        // Signal updated rcCommand values to Failsafe system
+        failsafeUpdateRcCommandValues();
 
         if (FLIGHT_MODE(HEADFREE_MODE)) {
             const float radDiff = degreesToRadians(DECIDEGREES_TO_DEGREES(attitude.values.yaw) - headFreeModeHold);
@@ -612,10 +595,7 @@ void tryArm(void)
     }
 
     if (!ARMING_FLAG(ARMED)) {
-        // Only beep if blocked by something other than DShot beeper guard delay to avoid feedback loop
-        if (armingFlags & ~ARMING_DISABLED_DSHOT_BEEPER) {
-            beeperConfirmationBeeps(1);
-        }
+        beeperConfirmationBeeps(1);
     }
 }
 
@@ -676,7 +656,7 @@ void processRx(timeUs_t currentTimeUs)
     if (!cliMode) {
         bool canUseRxData = rxIsReceivingSignal() && !FLIGHT_MODE(FAILSAFE_MODE);
         updateAdjustmentStates(canUseRxData);
-        processRcAdjustments(CONST_CAST(controlConfig_t*, currentControlProfile), canUseRxData);
+        processRcAdjustments(CONST_CAST(controlRateConfig_t*, currentControlRateProfile), canUseRxData);
     }
 
     // Angle mode forced on briefly after emergency inflight rearm to help stabilise attitude (currently limited to MR)
@@ -963,12 +943,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
     processPilotAndFailSafeActions(dT);
 
-    // Check battery, GPS signal, arming status etc @ 200 Hz
-    static uint8_t armingStatusDivider = 0;
-    if (++armingStatusDivider >= 10) {
-        armingStatusDivider = 0;
-        updateArmingStatus();
-    }
+    updateArmingStatus();
 
     if (rxConfig()->rcFilterFrequency) {
         rcInterpolationApply(isRXDataNew, currentTimeUs);

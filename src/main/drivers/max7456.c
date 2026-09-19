@@ -293,17 +293,6 @@ static int max7456PrepareBuffer(uint8_t * buf, size_t bufsize, int bufPtr, uint8
     return bufPtr;
 }
 
-static void max7456ApplyBusSpeed(void)
-{
-#if defined(MAX7456_SPI_SPEED)
-    busSpeed_e speed = (MAX7456_SPI_SPEED <= BUS_SPEED_ULTRAFAST) ? MAX7456_SPI_SPEED : BUS_SPEED_STANDARD;
-    busSetSpeed(state.dev, speed);
-#else
-    // Default safe speed for MAX7456
-    busSetSpeed(state.dev, BUS_SPEED_STANDARD);
-#endif
-}
-
 uint16_t max7456GetScreenSize(void)
 {
     // Default to PAL while the display is not yet initialized. This
@@ -397,7 +386,7 @@ void max7456Init(const videoSystem_e videoSystem)
         return;
     }
 
-    max7456ApplyBusSpeed();
+    busSetSpeed(state.dev, BUS_SPEED_STANDARD);
 
     // force soft reset on Max7456
     busWrite(state.dev, MAX7456ADD_VM0, MAX7456_RESET);

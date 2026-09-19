@@ -124,9 +124,9 @@
 #define ADC_CHANNEL_2_PIN               PC2
 
 #ifdef DYSF4PRO
-    #define ADC_CHANNEL_3_PIN               PC3
+#define ADC_CHANNEL_3_PIN               PC3
 #else
-    #define ADC_CHANNEL_3_PIN               PA0
+#define ADC_CHANNEL_3_PIN               PA0
 #endif
 
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_1
@@ -156,4 +156,3 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
-

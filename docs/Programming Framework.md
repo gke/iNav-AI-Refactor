@@ -26,22 +26,6 @@ IPF can be edited using INAV Configurator user interface, or via CLI. To use COn
 
 **Note:** IPF uses integer math. If your programming line returns a decimal, it will be truncated to an integer.  So if your math is `1` / `3` = , IPF will truncate the decimal and return `0`.
 
-## JavaScript-Based Programming (Alternative)
-
-INAV also supports a JavaScript-based programming interface that provides a more
-familiar syntax for those comfortable with JavaScript. The JavaScript code is transpiled
-(converted) into traditional logic conditions, so both methods ultimately use the same
-underlying system.
-
-See the [JavaScript Programming Guide](javascript_programming/JAVASCRIPT_PROGRAMMING_GUIDE.md)
-for complete documentation on using JavaScript to program your flight controller.
-
-**Benefits of JavaScript programming:**
-- Modern code editor with IntelliSense autocomplete
-- Real-time syntax validation and error messages
-- Familiar programming constructs (if statements, functions, variables)
-- Automatic conversion to logic conditions
-
 ## Logic Conditions
 
 ### CLI
@@ -186,7 +170,6 @@ for complete documentation on using JavaScript to program your flight controller
 | 46            | Minimum Ground Speed [m/s]            | The current minimum ground speed allowed in navigation flight modes |
 | 47            | Horizontal Wind Speed [cm/s]          | Estimated wind speed. If the wind estimator is unavailble or the wind estimation is invalid, -1 is returned |
 | 48            | Wind Direction [deg]                  | Estimated wind direction. If the wind estimator is unavailble or the wind estimation is invalid, -1 is returned |
-| 49            | Relative Wind Offset [deg]            | The relative offset between the heading of the aircraft and the heading of the wind. 0 indicates flying directly into a headwing. Negative numbers are a left offset. For example, if -20° is shown, turning right will correct towards 0. If the wind estimator is unavailble or the wind estimation is invalid, 0 is returned |
 
 #### FLIGHT_MODE
 
@@ -372,9 +355,3 @@ choose *value* and enter the channel number. Choosing "get RC value" is a common
 which does something other than what you probably want.
 
 ![screenshot of override an RC channel with a value](./assets/images/ipf_set_get_rc_channel.png)
-
-## Related Documentation
-
-- [JavaScript Programming Guide](javascript_programming/JAVASCRIPT_PROGRAMMING_GUIDE.md) - Alternative JavaScript-based syntax for programming logic conditions
-- [Operations Reference](javascript_programming/OPERATIONS_REFERENCE.md) - Complete reference for all supported operations in JavaScript
-- [Timer and Change Detection Examples](javascript_programming/TIMER_WHENCHANGED_EXAMPLES.md) - Practical examples for time-based patterns

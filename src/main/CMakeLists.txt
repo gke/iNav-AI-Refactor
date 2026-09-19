@@ -87,8 +87,6 @@ main_sources(COMMON_SRC
     drivers/accgyro/accgyro_icm20689.h
     drivers/accgyro/accgyro_icm42605.c
     drivers/accgyro/accgyro_icm42605.h
-    drivers/accgyro/accgyro_icm45686.c
-    drivers/accgyro/accgyro_icm45686.h
     drivers/accgyro/accgyro_mpu.c
     drivers/accgyro/accgyro_mpu.h
     drivers/accgyro/accgyro_mpu6000.c
@@ -181,8 +179,8 @@ main_sources(COMMON_SRC
     drivers/flash.h
     drivers/flash_m25p16.c
     drivers/flash_m25p16.h
-    drivers/flash_w25n.c
-    drivers/flash_w25n.h
+    drivers/flash_w25n01g.c
+    drivers/flash_w25n01g.h
     drivers/gimbal_common.h
     drivers/gimbal_common.c
     drivers/headtracker_common.h
@@ -219,8 +217,6 @@ main_sources(COMMON_SRC
     drivers/pitotmeter/pitotmeter_adc.h
     drivers/pitotmeter/pitotmeter_ms4525.c
     drivers/pitotmeter/pitotmeter_ms4525.h
-    drivers/pitotmeter/pitotmeter_ms5525.c
-    drivers/pitotmeter/pitotmeter_ms5525.h
     drivers/pitotmeter/pitotmeter_dlvr_l10d.c
     drivers/pitotmeter/pitotmeter_dlvr_l10d.h
     drivers/pitotmeter/pitotmeter_msp.c
@@ -284,9 +280,9 @@ main_sources(COMMON_SRC
     fc/cli.h
     fc/config.c
     fc/config.h
-    fc/control_profile.c
-    fc/control_profile.h
-    fc/control_profile_config_struct.h
+    fc/controlrate_profile.c
+    fc/controlrate_profile.h
+    fc/controlrate_profile_config_struct.h
     fc/fc_core.c
     fc/fc_core.h
     fc/fc_init.c

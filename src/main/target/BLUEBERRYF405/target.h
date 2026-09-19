@@ -155,4 +155,3 @@
 #define USE_DSHOT
 #define USE_DSHOT_DMAR
 #define USE_ESC_SENSOR
-

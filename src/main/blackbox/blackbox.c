@@ -48,7 +48,7 @@
 #include "drivers/pwm_output.h"
 
 #include "fc/config.h"
-#include "fc/control_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/fc_core.h"
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
@@ -504,7 +504,7 @@ typedef struct blackboxMainState_s {
     int16_t gyroPeaksYaw[DYN_NOTCH_PEAK_COUNT];
 
     int16_t accADC[XYZ_AXIS_COUNT];
-    uint16_t accVib;
+    int16_t accVib;
     int16_t attitude[XYZ_AXIS_COUNT];
     int32_t debug[DEBUG32_VALUE_COUNT];
     int16_t motor[MAX_SUPPORTED_MOTORS];
@@ -987,7 +987,7 @@ static void writeIntraframe(void)
         blackboxWriteSignedVBArray(blackboxCurrent->debug, DEBUG32_VALUE_COUNT);
     }
 
-    if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_AT_LEAST_MOTORS_1)) {
+    if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_MOTORS)) {
         //Motors can be below minthrottle when disarmed, but that doesn't happen much
         blackboxWriteUnsignedVB(blackboxCurrent->motor[0] - getThrottleIdleValue());
 
@@ -1254,7 +1254,7 @@ static void writeInterframe(void)
         blackboxWriteArrayUsingAveragePredictor32(offsetof(blackboxMainState_t, debug), DEBUG32_VALUE_COUNT);
     }
 
-    if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_AT_LEAST_MOTORS_1)) {
+    if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_MOTORS)) {
         blackboxWriteArrayUsingAveragePredictor16(offsetof(blackboxMainState_t, motor),     getMotorCount());
     }
 
@@ -1642,7 +1642,7 @@ static void loadMainState(timeUs_t currentTimeUs)
         blackboxCurrent->axisPID_D[i] = axisPID_D[i];
         blackboxCurrent->axisPID_F[i] = axisPID_F[i];
         blackboxCurrent->gyroADC[i] = lrintf(gyro.gyroADCf[i]);
-        blackboxCurrent->accADC[i] = constrain(lrintf(acc.accADCf[i] * acc.dev.acc_1G), -32678, 32767);
+        blackboxCurrent->accADC[i] = lrintf(acc.accADCf[i] * acc.dev.acc_1G);
         blackboxCurrent->gyroRaw[i] = lrintf(gyro.gyroRaw[i]);
 
 #ifdef USE_DYNAMIC_FILTERS
@@ -1668,8 +1668,7 @@ static void loadMainState(timeUs_t currentTimeUs)
             blackboxCurrent->mcVelAxisOutput[i] = lrintf(nav_pids->vel[i].output_constrained);
         }
     }
-
-    blackboxCurrent->accVib = constrain(lrintf(accGetVibrationLevel() * acc.dev.acc_1G), 0, 65535);
+    blackboxCurrent->accVib = lrintf(accGetVibrationLevel() * acc.dev.acc_1G);
 
     if (STATE(FIXED_WING_LEGACY)) {
 
@@ -1935,15 +1934,15 @@ static bool blackboxWriteSysinfo(void)
 
         BLACKBOX_PRINT_HEADER_LINE("looptime", "%d",                        getLooptime());
         BLACKBOX_PRINT_HEADER_LINE("rc_rate", "%d",                         100); //For compatibility reasons write rc_rate 100
-        BLACKBOX_PRINT_HEADER_LINE("rc_expo", "%d",                         currentControlProfile->stabilized.rcExpo8);
-        BLACKBOX_PRINT_HEADER_LINE("rc_yaw_expo", "%d",                     currentControlProfile->stabilized.rcYawExpo8);
-        BLACKBOX_PRINT_HEADER_LINE("thr_mid", "%d",                         currentControlProfile->throttle.rcMid8);
-        BLACKBOX_PRINT_HEADER_LINE("thr_expo", "%d",                        currentControlProfile->throttle.rcExpo8);
-        BLACKBOX_PRINT_HEADER_LINE("tpa_rate", "%d",                        currentControlProfile->throttle.dynPID);
-        BLACKBOX_PRINT_HEADER_LINE("tpa_breakpoint", "%d",                  currentControlProfile->throttle.pa_breakpoint);
-        BLACKBOX_PRINT_HEADER_LINE("rates", "%d,%d,%d",                     currentControlProfile->stabilized.rates[ROLL],
-                                                                            currentControlProfile->stabilized.rates[PITCH],
-                                                                            currentControlProfile->stabilized.rates[YAW]);
+        BLACKBOX_PRINT_HEADER_LINE("rc_expo", "%d",                         currentControlRateProfile->stabilized.rcExpo8);
+        BLACKBOX_PRINT_HEADER_LINE("rc_yaw_expo", "%d",                     currentControlRateProfile->stabilized.rcYawExpo8);
+        BLACKBOX_PRINT_HEADER_LINE("thr_mid", "%d",                         currentControlRateProfile->throttle.rcMid8);
+        BLACKBOX_PRINT_HEADER_LINE("thr_expo", "%d",                        currentControlRateProfile->throttle.rcExpo8);
+        BLACKBOX_PRINT_HEADER_LINE("tpa_rate", "%d",                        currentControlRateProfile->throttle.dynPID);
+        BLACKBOX_PRINT_HEADER_LINE("tpa_breakpoint", "%d",                  currentControlRateProfile->throttle.pa_breakpoint);
+        BLACKBOX_PRINT_HEADER_LINE("rates", "%d,%d,%d",                     currentControlRateProfile->stabilized.rates[ROLL],
+                                                                            currentControlRateProfile->stabilized.rates[PITCH],
+                                                                            currentControlRateProfile->stabilized.rates[YAW]);
         BLACKBOX_PRINT_HEADER_LINE("rollPID", "%d,%d,%d,%d",                pidBank()->pid[PID_ROLL].P,
                                                                             pidBank()->pid[PID_ROLL].I,
                                                                             pidBank()->pid[PID_ROLL].D,

@@ -27,14 +27,14 @@
 #define TARGET_BOARD_IDENTIFIER "NEXS"
 #define USBD_PRODUCT_STRING     "RadioMaster Nexus"
 
-/* ---- LEDs ---- */
+// ---- LEDs ----
 #define LED0                    PC14  // active low
 #define LED1                    PC15  // active low
 
-/* ---- Beeper ---- */
+// ---- Beeper ----
 // No dedicated beeper pin on Nexus hardware
 
-/* ---- SPI ---- */
+// ---- SPI ----
 #define USE_SPI
 #define USE_SPI_DEVICE_1
 #define SPI1_SCK_PIN            PA5
@@ -46,7 +46,7 @@
 #define SPI2_MISO_PIN           PB14
 #define SPI2_MOSI_PIN           PB15
 
-/* ---- IMU: ICM-42688-P ---- */
+// ---- IMU: ICM-42688-P ----
 // iNAV uses ICM42605 driver which is register-compatible with ICM42688P
 #define USE_IMU_ICM42605
 #define IMU_ICM42605_ALIGN      CW180_DEG
@@ -54,7 +54,7 @@
 #define ICM42605_SPI_BUS        BUS_SPI1
 #define ICM42605_EXTI_PIN       PA15
 
-/* ---- I2C ---- */
+// ---- I2C ----
 // I2C1: PB8/PB9 - internal, used for barometer
 #define USE_I2C
 #define USE_I2C_DEVICE_1
@@ -68,25 +68,25 @@
 #define I2C2_SDA                PB11
 #define I2C_DEVICE_2_SHARES_UART3
 
-/* ---- Barometer: SPL06-001 ---- */
+// ---- Barometer: SPL06-001 ----
 // Confirmed on I2C1 per Rotorflight NEXUS_F7 dump
 #define USE_BARO
 #define USE_BARO_SPL06
 #define BARO_I2C_BUS            BUS_I2C1
 
-/* ---- Magnetometer (external, optional via Port C / I2C2) ---- */
+// ---- Magnetometer (external, optional via Port C / I2C2) ----
 #define USE_MAG
 #define USE_MAG_ALL
 #define MAG_I2C_BUS             BUS_I2C2
 
-/* ---- Flash: W25N01G (128MB) ---- */
+// ---- Flash: W25N01G (128MB) ----
 #define USE_FLASHFS
 #define USE_FLASH_W25N01G
 #define W25N01G_SPI_BUS         BUS_SPI2
 #define W25N01G_CS_PIN          PB12
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
-/* ---- UARTs ---- */
+// ---- UARTs ----
 // OG Nexus UART layout (confirmed from Rotorflight NEXUS_F7 dump):
 //   UART1 [DSM port]  : PA9 (TX) / PA10 (RX)
 //   UART2 [SBUS/FREQ] : PA2 (TX) / PA3 (RX) - shared with RPM/TLM pins
@@ -123,13 +123,13 @@
 
 #define SERIAL_PORT_COUNT       6  // VCP + UART1-4 + UART6
 
-/* ---- Default serial receiver ---- */
+// ---- Default serial receiver ----
 #define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
 #define SERIALRX_PROVIDER       SERIALRX_CRSF
 #define SERIALRX_UART           SERIAL_PORT_USART4
 
 
-/* ---- ADC ---- */
+// ---- ADC ----
 // OG Nexus has no EXT-V input (unlike X/XR which has a dedicated
 // high-voltage sense on PC0). Only two ADC channels:
 //   ADC_BUS = PC2, divider 320 (Vin rail, 5-12.6V)
@@ -143,10 +143,10 @@
 // VBAT scale: hardware-verified value (divider ratio ~320)
 #define VBAT_SCALE_DEFAULT      320
 
-/* ---- Sensors ---- */
+// ---- Sensors ----
 #define SENSORS_SET             (SENSOR_ACC | SENSOR_BARO)
 
-/* ---- PWM / Servo / Motor outputs ---- */
+// ---- PWM / Servo / Motor outputs ----
 // OG Nexus outputs (from Rotorflight dump):
 //   S1:   PB4  (TIM3_CH1)  - Servo header
 //   S2:   PB5  (TIM3_CH2)  - Servo header
@@ -160,11 +160,11 @@
 
 #define MAX_PWM_OUTPUT_PORTS    7
 
-/* ---- No internal receiver ---- */
+// ---- No internal receiver ----
 // OG Nexus has no internal ELRS receiver.
 // No UART5, no PINIO1 power gate.
 
-/* ---- Platform ---- */
+// ---- Platform ----
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff

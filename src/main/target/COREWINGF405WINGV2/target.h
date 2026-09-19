@@ -28,9 +28,9 @@
 #define BEEPER                  PC15
 #define BEEPER_INVERTED
 
-/*
- * Buses
- */
+//
+// Buses
+//
 
 // SPI1
 #define USE_SPI
@@ -85,17 +85,17 @@
 
 #define SERIAL_PORT_COUNT       8
 
-/*
- * I2C
- */
+//
+// I2C
+//
 #define USE_I2C
 #define USE_I2C_DEVICE_1
 #define I2C1_SCL                PB8
 #define I2C1_SDA                PB9
 
-/*
- * Sensor drivers
- */
+//
+// Sensor drivers
+//
 
 #define USE_IMU_ICM42605        //Using ICM42688
 #define IMU_ICM42605_ALIGN      CW270_DEG

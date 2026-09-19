@@ -111,8 +111,8 @@
 #define UART6_RX_PIN            PC7
 #define UART6_TX_PIN            PC6
 #if defined(OMNIBUSF4V3)
-  #define INVERTER_PIN_UART6_RX PC8
-  #define INVERTER_PIN_UART6_TX PC9
+#define INVERTER_PIN_UART6_RX PC8
+#define INVERTER_PIN_UART6_TX PC9
 #endif
 
 #if defined(OMNIBUSF4V3)

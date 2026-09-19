@@ -40,7 +40,7 @@ void soap_client_destroy(soap_client_t* c);
 // Sends raw XML as content of <soap:Body> and returns raw XML content of response <soap:Body>.
 // Caller must free(*response_body_xml) on success.
 int soap_client_call_raw_body(soap_client_t* c,
-                              const char* soap_action,
-                              const char* request_body_xml,
-                              char** response_body_xml,
-                              int* http_status);
+const char* soap_action,
+const char* request_body_xml,
+char** response_body_xml,
+int* http_status);

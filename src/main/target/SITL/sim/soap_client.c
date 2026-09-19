@@ -43,20 +43,14 @@ static int set_socket_timeout(int fd, int timeout_ms) {
     tv.tv_sec = timeout_ms / 1000;
     tv.tv_usec = (timeout_ms % 1000) * 1000;
 
-    if (setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) != 0) {
-        return -1;
-    }
-    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) != 0) {
-        return -1;
-    }
+    if (setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) != 0) return -1;;
+    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) != 0) return -1;;
     return 0;
 }
 
 static int connect_with_timeout(const struct addrinfo* ai, int timeout_ms) {
     int fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
-    if (fd < 0) {
-        return -1;
-    }
+    if (fd < 0) return -1;;
 
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags < 0) {
@@ -121,17 +115,13 @@ static int open_tcp_connection(const char* host, const char* port, int timeout_m
     hints.ai_socktype = SOCK_STREAM;
 
     struct addrinfo* result = NULL;
-    if (getaddrinfo(host, port, &hints, &result) != 0) {
-        return -1;
-    }
+    if (getaddrinfo(host, port, &hints, &result) != 0) return -1;;
 
     int fd = -1;
     for (const struct addrinfo* ai = result; ai != NULL; ai = ai->ai_next) {
         fd = connect_with_timeout(ai, timeout_ms);
         if (fd >= 0) {
-            if (set_socket_timeout(fd, timeout_ms) == 0) {
-                break;
-            }
+            if (set_socket_timeout(fd, timeout_ms) == 0) break;;
             close(fd);
             fd = -1;
         }
@@ -146,14 +136,10 @@ static int send_all(int fd, const char* data, size_t len) {
     while (total < len) {
         ssize_t n = send(fd, data + total, len - total, 0);
         if (n < 0) {
-            if (errno == EINTR) {
-                continue;
-            }
+            if (errno == EINTR) continue;;
             return -1;
         }
-        if (n == 0) {
-            return -1;
-        }
+        if (n == 0) return -1;;
         total += (size_t)n;
     }
     return 0;
@@ -163,9 +149,7 @@ static char* recv_all(int fd, size_t* out_len) {
     size_t cap = 8192;
     size_t len = 0;
     char* buf = (char*)malloc(cap);
-    if (!buf) {
-        return NULL;
-    }
+    if (!buf) return NULL;;
 
     while (1) {
         if (len == cap) {
@@ -181,15 +165,11 @@ static char* recv_all(int fd, size_t* out_len) {
 
         ssize_t n = recv(fd, buf + len, cap - len, 0);
         if (n < 0) {
-            if (errno == EINTR) {
-                continue;
-            }
+            if (errno == EINTR) continue;;
             free(buf);
             return NULL;
         }
-        if (n == 0) {
-            break;
-        }
+        if (n == 0) break;;
         len += (size_t)n;
     }
 
@@ -205,18 +185,14 @@ static char* recv_all(int fd, size_t* out_len) {
 
 static int parse_http_status(const char* response) {
     int status = 0;
-    if (sscanf(response, "HTTP/%*d.%*d %d", &status) == 1) {
-        return status;
-    }
+    if (sscanf(response, "HTTP/%*d.%*d %d", &status) == 1) return status;;
     return 0;
 }
 
 static char* dechunk_http_body(const char* body, size_t body_len, size_t* out_len) {
     size_t cap = body_len + 1;
     char* out = (char*)malloc(cap);
-    if (!out) {
-        return NULL;
-    }
+    if (!out) return NULL;;
     size_t out_pos = 0;
     size_t pos = 0;
 
@@ -244,9 +220,7 @@ static char* dechunk_http_body(const char* body, size_t body_len, size_t* out_le
         }
 
         pos = (size_t)(line_end - body) + 2;
-        if (chunk_size == 0) {
-            break;
-        }
+        if (chunk_size == 0) break;;
         if (pos + chunk_size + 2 > body_len) {
             free(out);
             return NULL;
@@ -254,9 +228,7 @@ static char* dechunk_http_body(const char* body, size_t body_len, size_t* out_le
 
         if (out_pos + chunk_size + 1 > cap) {
             size_t new_cap = cap;
-            while (out_pos + chunk_size + 1 > new_cap) {
-                new_cap *= 2;
-            }
+            while (out_pos + chunk_size + 1 > new_cap) new_cap *= 2;;
             char* next = (char*)realloc(out, new_cap);
             if (!next) {
                 free(out);
@@ -292,23 +264,17 @@ static char* extract_soap_body_raw(const char* xml, size_t xml_len) {
 
     while (p < end) {
         const char* lt = strchr(p, '<');
-        if (!lt || lt >= end) {
-            break;
-        }
+        if (!lt || lt >= end) break;;
         if (lt + 1 < end && (lt[1] == '/' || lt[1] == '?' || lt[1] == '!')) {
             p = lt + 1;
             continue;
         }
         const char* gt = strchr(lt, '>');
-        if (!gt || gt >= end) {
-            break;
-        }
+        if (!gt || gt >= end) break;;
 
         const char* name_start = lt + 1;
         const char* name_end = name_start;
-        while (name_end < gt && *name_end != ' ' && *name_end != '\t' && *name_end != '\r' && *name_end != '\n' && *name_end != '/') {
-            name_end++;
-        }
+        while (name_end < gt && *name_end != ' ' && *name_end != '\t' && *name_end != '\r' && *name_end != '\n' && *name_end != '/') name_end++;;
 
         size_t name_len = (size_t)(name_end - name_start);
         if (name_len >= 4 && strncmp(name_end - 4, "Body", 4) == 0) {
@@ -320,15 +286,11 @@ static char* extract_soap_body_raw(const char* xml, size_t xml_len) {
         p = gt + 1;
     }
 
-    if (!body_open || !body_name_start || !body_name_end) {
-        return NULL;
-    }
+    if (!body_open || !body_name_start || !body_name_end) return NULL;;
 
     char close_tag[128];
     size_t tag_len = (size_t)(body_name_end - body_name_start);
-    if (tag_len + 4 >= sizeof(close_tag)) {
-        return NULL;
-    }
+    if (tag_len + 4 >= sizeof(close_tag)) return NULL;;
     close_tag[0] = '<';
     close_tag[1] = '/';
     memcpy(close_tag + 2, body_name_start, tag_len);
@@ -336,52 +298,36 @@ static char* extract_soap_body_raw(const char* xml, size_t xml_len) {
     close_tag[tag_len + 3] = '\0';
 
     const char* close = strstr(body_open, close_tag);
-    if (!close) {
-        return NULL;
-    }
+    if (!close) return NULL;;
 
     size_t inner_len = (size_t)(close - body_open);
     char* inner = (char*)malloc(inner_len + 1);
-    if (!inner) {
-        return NULL;
-    }
+    if (!inner) return NULL;;
     memcpy(inner, body_open, inner_len);
     inner[inner_len] = '\0';
     return inner;
 }
 
 int soap_client_init(soap_client_t* c, const char* host, const char* port, const char* path, int timeout_ms) {
-    if (!c || !host || !port || !path) {
-        return -1;
-    }
+    if (!c || !host || !port || !path) return -1;;
     memset(c, 0, sizeof(*c));
-    if (snprintf(c->host, sizeof(c->host), "%s", host) >= (int)sizeof(c->host)) {
-        return -1;
-    }
-    if (snprintf(c->port, sizeof(c->port), "%s", port) >= (int)sizeof(c->port)) {
-        return -1;
-    }
-    if (snprintf(c->path, sizeof(c->path), "%s", path) >= (int)sizeof(c->path)) {
-        return -1;
-    }
+    if (snprintf(c->host, sizeof(c->host), "%s", host) >= (int)sizeof(c->host)) return -1;;
+    if (snprintf(c->port, sizeof(c->port), "%s", port) >= (int)sizeof(c->port)) return -1;;
+    if (snprintf(c->path, sizeof(c->path), "%s", path) >= (int)sizeof(c->path)) return -1;;
     c->timeout_ms = timeout_ms;
     return pthread_mutex_init(&c->lock, NULL);
 }
 
 void soap_client_destroy(soap_client_t* c) {
-    if (c) {
-        pthread_mutex_destroy(&c->lock);
-    }
+    if (c) pthread_mutex_destroy(&c->lock);;
 }
 
 int soap_client_call_raw_body(soap_client_t* c,
-                              const char* soap_action,
-                              const char* request_body_xml,
-                              char** response_body_xml,
-                              int* http_status) {
-    if (!c || !request_body_xml || !response_body_xml || !http_status) {
-        return -1;
-    }
+const char* soap_action,
+const char* request_body_xml,
+char** response_body_xml,
+int* http_status) {
+    if (!c || !request_body_xml || !response_body_xml || !http_status) return -1;;
 
     char host[256];
     char port[16];
@@ -396,34 +342,32 @@ int soap_client_call_raw_body(soap_client_t* c,
     pthread_mutex_unlock(&c->lock);
 
     const char* envelope_prefix =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-        "<soap:Body>";
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+    "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+    "<soap:Body>";
     const char* envelope_suffix = "</soap:Body></soap:Envelope>";
 
     size_t body_len = strlen(request_body_xml);
     size_t envelope_len = strlen(envelope_prefix) + body_len + strlen(envelope_suffix);
     char* envelope = (char*)malloc(envelope_len + 1);
-    if (!envelope) {
-        return -1;
-    }
+    if (!envelope) return -1;;
     snprintf(envelope, envelope_len + 1, "%s%s%s", envelope_prefix, request_body_xml, envelope_suffix);
 
     const char* action_header = (soap_action && soap_action[0] != '\0') ? soap_action : "";
     int req_len = snprintf(NULL,
-                           0,
-                           "POST %s HTTP/1.1\r\n"
-                           "Host: %s:%s\r\n"
-                           "Content-Type: text/xml; charset=utf-8\r\n"
-                           "SOAPAction: \"%s\"\r\n"
-                           "Content-Length: %zu\r\n"
-                           "Connection: close\r\n\r\n%s",
-                           path,
-                           host,
-                           port,
-                           action_header,
-                           envelope_len,
-                           envelope);
+    0,
+    "POST %s HTTP/1.1\r\n"
+    "Host: %s:%s\r\n"
+    "Content-Type: text/xml; charset=utf-8\r\n"
+    "SOAPAction: \"%s\"\r\n"
+    "Content-Length: %zu\r\n"
+    "Connection: close\r\n\r\n%s",
+    path,
+    host,
+    port,
+    action_header,
+    envelope_len,
+    envelope);
     if (req_len < 0) {
         free(envelope);
         return -1;
@@ -435,19 +379,19 @@ int soap_client_call_raw_body(soap_client_t* c,
         return -1;
     }
     snprintf(request,
-             (size_t)req_len + 1,
-             "POST %s HTTP/1.1\r\n"
-             "Host: %s:%s\r\n"
-             "Content-Type: text/xml; charset=utf-8\r\n"
-             "SOAPAction: \"%s\"\r\n"
-             "Content-Length: %zu\r\n"
-             "Connection: close\r\n\r\n%s",
-             path,
-             host,
-             port,
-             action_header,
-             envelope_len,
-             envelope);
+    (size_t)req_len + 1,
+    "POST %s HTTP/1.1\r\n"
+    "Host: %s:%s\r\n"
+    "Content-Type: text/xml; charset=utf-8\r\n"
+    "SOAPAction: \"%s\"\r\n"
+    "Content-Length: %zu\r\n"
+    "Connection: close\r\n\r\n%s",
+    path,
+    host,
+    port,
+    action_header,
+    envelope_len,
+    envelope);
 
     int fd = open_tcp_connection(host, port, timeout_ms);
     if (fd < 0) {
@@ -491,9 +435,7 @@ int soap_client_call_raw_body(soap_client_t* c,
             goto cleanup;
         }
         soap_body = extract_soap_body_raw(body, decoded_len);
-    } else {
-        soap_body = extract_soap_body_raw(raw_body, raw_body_len);
-    }
+    } else soap_body = extract_soap_body_raw(raw_body, raw_body_len);;
 
     if (!soap_body) {
         rc = -1;
@@ -503,14 +445,12 @@ int soap_client_call_raw_body(soap_client_t* c,
     *response_body_xml = soap_body;
     soap_body = NULL;
 
-cleanup:
-    if (fd >= 0) {
-        close(fd);
-    }
+    cleanup:
+    if (fd >= 0) close(fd);;
     free(request);
     free(envelope);
     free(response);
     free(body);
     free(soap_body);
     return rc;
-}
+} // soap_client_call_raw_body

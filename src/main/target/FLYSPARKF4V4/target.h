@@ -24,11 +24,11 @@
 
 #pragma once
 
-#define TARGET_BOARD_IDENTIFIER "FSF4"		
-#define USBD_PRODUCT_STRING  "FlySparkF4v1"	
+#define TARGET_BOARD_IDENTIFIER "FSF4"
+#define USBD_PRODUCT_STRING  "FlySparkF4v1"
 
-/*** Indicators ***/
-#define LED0                    PC13  //Blue  
+// ** Indicators **
+#define LED0                    PC13  //Blue
 
 #define BEEPER                  PC15
 #define BEEPER_INVERTED
@@ -56,7 +56,7 @@
 // Internally routed to Bluetooth
 #define USE_UART4
 #define UART4_TX_PIN            PA0
-#define UART4_RX_PIN            PA1 
+#define UART4_RX_PIN            PA1
 
 #define USE_UART5
 #define UART5_TX_PIN            PC12    // Not broken out
