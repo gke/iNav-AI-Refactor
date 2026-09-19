@@ -126,6 +126,16 @@ int32_t unitLatLonToDegreesE7(float radians) {
     return lroundf((radians / (float)RAD) * 10000000.0f);
 } // unitLatLonToDegreesE7
 
+// --- Time: wire microseconds <-> seconds (SI) ---
+
+float unitTimeFromMicroseconds(int32_t microseconds) {
+    return (float)microseconds * 1e-6f;
+} // unitTimeFromMicroseconds
+
+int32_t unitTimeToMicroseconds(float seconds) {
+    return lroundf(seconds * 1000000.0f);
+} // unitTimeToMicroseconds
+
 // Time
 
 float unitTimeFromMicroseconds(int32_t microseconds) {

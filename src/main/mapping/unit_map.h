@@ -99,3 +99,8 @@ int16_t unitTemperatureToDecidegreesC(float degreesC);
 
 float unitLatLonFromDegreesE7(int32_t degreesE7);
 int32_t unitLatLonToDegreesE7(float radians);
+
+// --- Time: wire microseconds <-> seconds (SI) ---
+
+float unitTimeFromMicroseconds(int32_t microseconds);
+int32_t unitTimeToMicroseconds(float seconds);
