@@ -48,7 +48,7 @@
 // Based on WindEstimation.pdf paper
 
 static bool hasValidWindEstimate = false;
-static float estimatedWind[XYZ_AXIS_COUNT] = {0, 0, 0};    // wind velocity vectors in cm / sec in earth frame
+static float estimatedWind[XYZ_AXIS_COUNT] = {0, 0, 0};    // wind velocity vectors in centimetres / sec in earth frame
 static float lastGroundVelocity[XYZ_AXIS_COUNT];
 static float lastFuselageDirection[XYZ_AXIS_COUNT];
 
@@ -112,7 +112,7 @@ void updateWindEstimator(timeUs_t currentTimeUs)
     float fuselageDirectionDiff[XYZ_AXIS_COUNT];
     float fuselageDirectionSum[XYZ_AXIS_COUNT];
 
-    // Get current 3D velocity from GPS in cm/s
+    // Get current 3D velocity from GPS in centimetres/s
     // relative to earth frame
     groundVelocity[X] = posEstimator.gps.vel.x;
     groundVelocity[Y] = posEstimator.gps.vel.y;

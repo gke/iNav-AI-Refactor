@@ -350,7 +350,7 @@ typedef struct positionEstimationConfig_s {
     uint8_t automatic_mag_declination;
     uint8_t reset_altitude_type;            // from nav_reset_type_e
     uint8_t reset_home_type;                // nav_reset_type_e
-    uint8_t gravity_calibration_tolerance;  // Tolerance of gravity calibration (cm/s/s)
+    uint8_t gravity_calibration_tolerance;  // Tolerance of gravity calibration (centimetres/s/s)
     uint8_t allow_dead_reckoning;
 
     uint16_t max_surface_altitude;
@@ -375,7 +375,7 @@ typedef struct positionEstimationConfig_s {
 
     float w_acc_bias;           // Weight (cutoff frequency) for accelerometer bias estimation. 0 to disable.
 
-    float max_eph_epv;          // Max estimated position error acceptable for estimation (cm)
+    float max_eph_epv;          // Max estimated position error acceptable for estimation (centimetres)
     float baro_epv;             // Baro position error
 
     uint8_t default_alt_sensor; // default altitude sensor source
@@ -411,26 +411,26 @@ typedef struct navConfig_s {
         } flags;
 
         uint8_t  pos_failure_timeout;               // Time to wait before switching to emergency landing (0 - disable)
-        uint16_t waypoint_radius;                   // if we are within this distance to a waypoint then we consider it reached (distance is in cm)
+        uint16_t waypoint_radius;                   // if we are within this distance to a waypoint then we consider it reached (distance is in centimetres)
         uint16_t waypoint_safe_distance;            // Waypoint mission sanity check distance
 #ifdef USE_MULTI_MISSION
         uint8_t  waypoint_multi_mission_index;      // Index of mission to be loaded in multi mission entry
 #endif
         bool     waypoint_load_on_boot;             // load waypoints automatically during boot
-        uint16_t auto_speed;                        // autonomous navigation speed cm/sec
+        uint16_t auto_speed;                        // autonomous navigation speed centimetres/sec
         uint8_t  min_ground_speed;                  // Minimum navigation ground speed [m/s]
-        uint16_t max_auto_speed;                    // maximum allowed autonomous navigation speed cm/sec
+        uint16_t max_auto_speed;                    // maximum allowed autonomous navigation speed centimetres/sec
         uint16_t max_manual_speed;                  // manual velocity control max horizontal speed
         uint16_t land_minalt_vspd;                  // Final RTH landing descent rate under minalt
         uint16_t land_maxalt_vspd;                  // RTH landing descent rate target at maxalt
         uint16_t land_slowdown_minalt;              // Altitude to stop lowering descent rate during RTH descend
         uint16_t land_slowdown_maxalt;              // Altitude to start lowering descent rate during RTH descend
         uint16_t emerg_descent_rate;                // emergency landing descent rate
-        uint16_t rth_altitude;                      // altitude to maintain when RTH is active (depends on rth_alt_control_mode) (cm)
-        uint16_t rth_home_altitude;                 // altitude to go to during RTH after the craft reached home (cm)
+        uint16_t rth_altitude;                      // altitude to maintain when RTH is active (depends on rth_alt_control_mode) (centimetres)
+        uint16_t rth_home_altitude;                 // altitude to go to during RTH after the craft reached home (centimetres)
         uint16_t rth_climb_first_stage_altitude;    // Altitude to reach before transitioning from climb first to turn first
-        uint16_t min_rth_distance;                  // 0 Disables. Minimal distance for RTH in cm, otherwise it will just autoland
-        uint16_t rth_abort_threshold;               // Initiate emergency landing if during RTH we get this much [cm] away from home
+        uint16_t min_rth_distance;                  // 0 Disables. Minimal distance for RTH in centimetres, otherwise it will just autoland
+        uint16_t rth_abort_threshold;               // Initiate emergency landing if during RTH we get this much [centimetres] away from home
         uint16_t max_terrain_follow_altitude;       // Max altitude to be used in SURFACE TRACKING mode
         uint16_t safehome_max_distance;             // Max distance that a safehome is from the arming point
         uint16_t max_altitude;                      // Max altitude when in AltHold mode (not Surface Following)
@@ -445,7 +445,7 @@ typedef struct navConfig_s {
 
     struct {
         uint8_t  max_bank_angle;                // multicopter max banking angle (deg)
-        uint16_t max_auto_climb_rate;           // max vertical speed limitation nav modes cm/sec
+        uint16_t max_auto_climb_rate;           // max vertical speed limitation nav modes centimetres/sec
         uint16_t max_manual_climb_rate;         // manual velocity control max vertical speed
 
 #ifdef USE_MR_BRAKING_MODE
@@ -468,11 +468,11 @@ typedef struct navConfig_s {
 
     struct {
         uint8_t  max_bank_angle;             // Fixed wing max banking angle (deg)
-        uint16_t max_auto_climb_rate;        // max vertical speed limitation nav modes cm/sec
+        uint16_t max_auto_climb_rate;        // max vertical speed limitation nav modes centimetres/sec
         uint16_t max_manual_climb_rate;      // manual velocity control max vertical speed
         uint8_t  max_climb_angle;            // Fixed wing max banking angle (deg)
         uint8_t  max_dive_angle;             // Fixed wing max banking angle (deg)
-        uint16_t cruise_speed;               // Speed at cruise throttle (cm/s), used for time/distance left before RTH
+        uint16_t cruise_speed;               // Speed at cruise throttle (centimetres/s), used for time/distance left before RTH
         uint8_t  control_smoothness;         // The amount of smoothing to apply to controls for navigation
         uint16_t pitch_to_throttle_smooth;   // How smoothly the autopilot makes pitch to throttle correction inside a deadband defined by pitch_to_throttle_thresh.
         uint8_t  pitch_to_throttle_thresh;   // Threshold from average pitch where momentary pitch_to_throttle correction kicks in. [decidegrees]
@@ -481,7 +481,7 @@ typedef struct navConfig_s {
         uint8_t  loiter_direction;           // Direction of loitering center point on right wing (clockwise - as before), or center point on left wing (counterclockwise)
         int8_t   land_dive_angle;
         uint16_t launch_velocity_thresh;     // Velocity threshold for swing launch detection
-        uint16_t launch_accel_thresh;        // Acceleration threshold for launch detection (cm/s/s)
+        uint16_t launch_accel_thresh;        // Acceleration threshold for launch detection (centimetres/s/s)
         uint16_t launch_time_thresh;         // Time threshold for launch detection (ms)
         uint16_t launch_motor_timer;         // Time to wait before setting launch_throttle (ms)
         uint16_t launch_idle_motor_timer;    // Time to wait before motor starts at_idle throttle (ms)
@@ -490,7 +490,7 @@ typedef struct navConfig_s {
         uint16_t launch_end_time;            // Time to make the transition from launch angle to leveled and throttle transition from launch throttle to the stick position
         uint16_t launch_min_time;	         // Minimum time in launch mode to prevent possible bump of the sticks from leaving launch mode early
         uint16_t launch_timeout;             // Launch timeout to disable launch mode and swith to normal flight (ms)
-        uint16_t launch_max_altitude;        // cm, altitude where to consider launch ended
+        uint16_t launch_max_altitude;        // centimetres, altitude where to consider launch ended
         uint8_t  launch_climb_angle;         // Target climb angle for launch (deg)
         uint8_t  launch_max_angle;           // Max tilt angle (pitch/roll combined) to consider launch successful. Set to 180 to disable completely [deg]
         bool     launch_manual_throttle;     // Allows launch with manual throttle control
@@ -513,7 +513,7 @@ typedef struct gpsOrigin_s {
     float   scale;
     int32_t lat;    // Lattitude * 1e+7
     int32_t lon;    // Longitude * 1e+7
-    int32_t alt;    // Altitude in centimeters (meters * 100)
+    int32_t alt;    // Altitude in centimetres (meters * 100)
 } gpsOrigin_t;
 
 typedef enum {
@@ -565,7 +565,7 @@ typedef struct radar_pois_s {
     gpsLocation_t gps;
     uint8_t state;
     uint16_t heading; // °
-    uint16_t speed; // cm/s
+    uint16_t speed; // centimetres/s
     uint8_t lq; // from 0 t o 4
     uint16_t distance; // m
     int16_t altitude; // m

@@ -65,7 +65,7 @@ typedef struct {
 
 typedef struct {
     timeUs_t    lastUpdateTime; // Last update time (us)
-    fpVector3_t pos;            // GPS position in NEU coordinate system (cm)
+    fpVector3_t pos;            // GPS position in NEU coordinate system (centimetres)
     fpVector3_t vel;            // GPS velocity (cms)
     float       eph;
     float       epv;
@@ -74,14 +74,14 @@ typedef struct {
 typedef struct {
     timeUs_t    lastUpdateTime; // Last update time (us)
     pt1Filter_t avgFilter;
-    float       alt;            // Raw barometric altitude (cm)
+    float       alt;            // Raw barometric altitude (centimetres)
     float       epv;
-    float       baroAltRate;    // Baro altitude rate of change (cm/s)
+    float       baroAltRate;    // Baro altitude rate of change (centimetres/s)
 } navPositionEstimatorBARO_t;
 
 typedef struct {
     timeUs_t    lastUpdateTime; // Last update time (us)
-    float       airspeed;            // airspeed (cm/s)
+    float       airspeed;            // airspeed (centimetres/s)
 } navPositionEstimatorPITOT_t;
 
 typedef enum {
@@ -93,7 +93,7 @@ typedef enum {
 typedef struct {
     timeUs_t    lastUpdateTime; // Last update time (us)
     pt1Filter_t avgFilter;
-    float       alt;            // Raw altitude measurement (cm)
+    float       alt;            // Raw altitude measurement (centimetres)
     float       reliability;
 } navPositionEstimatorSURFACE_t;
 

@@ -40,7 +40,7 @@ typedef struct failsafeConfig_s {
     int16_t failsafe_fw_pitch_angle;
     int16_t failsafe_fw_yaw_rate;
     uint16_t failsafe_stick_motion_threshold;
-    uint16_t failsafe_min_distance;             // Minimum distance required for failsafe procedure to be taken. 1 step = 1 centimeter. 0 = Regular failsafe_procedure always active (default)
+    uint16_t failsafe_min_distance;             // Minimum distance required for failsafe procedure to be taken. 1 step = 1 centimetre. 0 = Regular failsafe_procedure always active (default)
     uint8_t failsafe_min_distance_procedure;    // selected minimum distance failsafe procedure is 0: auto-landing, 1: Drop it, 2: Return To Home (RTH)
     int16_t failsafe_mission_delay;             // Time delay before Failsafe triggered when WP mission in progress (s)
 #ifdef USE_GPS_FIX_ESTIMATION

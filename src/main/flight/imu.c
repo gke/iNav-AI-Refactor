@@ -85,7 +85,7 @@
 FASTRAM fpVector3_t imuMeasuredAccelBF;
 FASTRAM fpVector3_t imuMeasuredRotationBF;
 //centrifugal force compensated using gps
-FASTRAM fpVector3_t compansatedGravityBF;// cm/s/s
+FASTRAM fpVector3_t compansatedGravityBF;// centimetres/s/s
 
 STATIC_FASTRAM float smallAngleCosZ;
 
@@ -652,7 +652,7 @@ static void imuCalculateGPSacceleration(fpVector3_t *vEstcentrifugalAccelBF, flo
     static bool lastGPSHeartbeat;
     static fpVector3_t lastGPSvel;
 
-    const fpVector3_t currentGPSvel = {.v = {gpsSol.velNED[X], gpsSol.velNED[Y], gpsSol.velNED[Z]}}; // cm/s gps speed
+    const fpVector3_t currentGPSvel = {.v = {gpsSol.velNED[X], gpsSol.velNED[Y], gpsSol.velNED[Z]}}; // centimetres/s gps speed
     const rtcTime_t currenttime = millis();
 
     // on first gps data acquired, time_delta_ms will be large, vEstcentrifugalAccelBF will be minimal to disable the compensation
@@ -862,7 +862,7 @@ void imuUpdateAttitude(timeUs_t currentTimeUs)
 
     if (sensors(SENSOR_ACC) && isAccelUpdatedAtLeastOnce) {
         gyroGetMeasuredRotationRate(&imuMeasuredRotationBF);    // Calculate gyro rate in body frame in rad/s
-        accGetMeasuredAcceleration(&imuMeasuredAccelBF);  // Calculate accel in body frame in cm/s/s
+        accGetMeasuredAcceleration(&imuMeasuredAccelBF);  // Calculate accel in body frame in centimetres/s/s
         imuCheckVibrationLevels();
         imuCalculateEstimatedAttitude(dT);  // Update attitude estimate
     } else {

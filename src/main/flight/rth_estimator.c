@@ -85,7 +85,7 @@ static float estimatePitchPower(float pitch) {
 
 // altitudeChange is in m
 // verticalWindSpeed is in m/s
-// cruise_speed is in cm/s
+// cruise_speed is in centimetres/s
 // output is in seconds
 static float estimateRTHAltitudeChangeTime(float altitudeChange, float verticalWindSpeed) {
     // Assuming increase in throttle keeps air speed at cruise speed
@@ -97,7 +97,7 @@ static float estimateRTHAltitudeChangeTime(float altitudeChange, float verticalW
 // horizontalWindSpeed is in m/s
 // windHeading is in degrees
 // verticalWindSpeed is in m/s
-// cruise_speed is in cm/s
+// cruise_speed is in centimetres/s
 // output is in meters
 static float estimateRTHAltitudeChangeGroundDistance(float altitudeChange, float horizontalWindSpeed, float windHeading, float verticalWindSpeed) {
     // Assuming increase in throttle keeps air speed at cruise speed

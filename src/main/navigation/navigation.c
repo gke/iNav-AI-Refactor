@@ -71,10 +71,10 @@
 #include "sensors/rangefinder.h"
 
 // Multirotors:
-#define MR_RTH_CLIMB_OVERSHOOT_CM   100  // target this amount of cm *above* the target altitude to ensure it is actually reached (Vz > 0 at target alt)
-#define MR_RTH_CLIMB_MARGIN_MIN_CM  100  // start cruising home this amount of cm *before* reaching the cruise altitude (while continuing the ascend)
+#define MR_RTH_CLIMB_OVERSHOOT_CM   100  // target this amount of centimetres *above* the target altitude to ensure it is actually reached (Vz > 0 at target alt)
+#define MR_RTH_CLIMB_MARGIN_MIN_CM  100  // start cruising home this amount of centimetres *before* reaching the cruise altitude (while continuing the ascend)
 #define MR_RTH_CLIMB_MARGIN_PERCENT 15   // on high RTH altitudes use even bigger margin - percent of the altitude set
-#define MR_RTH_LAND_MARGIN_CM       2000 // pause landing if this amount of cm *before* remaining to the home point (2D distance)
+#define MR_RTH_LAND_MARGIN_CM       2000 // pause landing if this amount of centimetres *before* remaining to the home point (2D distance)
 
 // Planes:
 #define FW_RTH_CLIMB_OVERSHOOT_CM   100
@@ -157,17 +157,17 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
         .min_ground_speed = SETTING_NAV_MIN_GROUND_SPEED_DEFAULT,                               // Minimum ground speed (m/s)
         .max_auto_speed = SETTING_NAV_MAX_AUTO_SPEED_DEFAULT,                                   // max allowed speed autonomous modes
         .max_manual_speed = SETTING_NAV_MANUAL_SPEED_DEFAULT,
-        .land_slowdown_minalt = SETTING_NAV_LAND_SLOWDOWN_MINALT_DEFAULT,                       // altitude in centimeters
+        .land_slowdown_minalt = SETTING_NAV_LAND_SLOWDOWN_MINALT_DEFAULT,                       // altitude in centimetres
         .land_slowdown_maxalt = SETTING_NAV_LAND_SLOWDOWN_MAXALT_DEFAULT,                       // altitude in meters
-        .land_minalt_vspd = SETTING_NAV_LAND_MINALT_VSPD_DEFAULT,                               // centimeters/s
-        .land_maxalt_vspd = SETTING_NAV_LAND_MAXALT_VSPD_DEFAULT,                               // centimeters/s
-        .emerg_descent_rate = SETTING_NAV_EMERG_LANDING_SPEED_DEFAULT,                          // centimeters/s
-        .min_rth_distance = SETTING_NAV_MIN_RTH_DISTANCE_DEFAULT,                               // centimeters, if closer than this land immediately
-        .rth_altitude = SETTING_NAV_RTH_ALTITUDE_DEFAULT,                                       // altitude in centimeters
-        .rth_home_altitude = SETTING_NAV_RTH_HOME_ALTITUDE_DEFAULT,                             // altitude in centimeters
+        .land_minalt_vspd = SETTING_NAV_LAND_MINALT_VSPD_DEFAULT,                               // centimetres/s
+        .land_maxalt_vspd = SETTING_NAV_LAND_MAXALT_VSPD_DEFAULT,                               // centimetres/s
+        .emerg_descent_rate = SETTING_NAV_EMERG_LANDING_SPEED_DEFAULT,                          // centimetres/s
+        .min_rth_distance = SETTING_NAV_MIN_RTH_DISTANCE_DEFAULT,                               // centimetres, if closer than this land immediately
+        .rth_altitude = SETTING_NAV_RTH_ALTITUDE_DEFAULT,                                       // altitude in centimetres
+        .rth_home_altitude = SETTING_NAV_RTH_HOME_ALTITUDE_DEFAULT,                             // altitude in centimetres
         .rth_climb_first_stage_altitude = SETTING_NAV_RTH_CLIMB_FIRST_STAGE_ALTITUDE_DEFAULT,   // altitude in centimetres, 0= off
-        .rth_abort_threshold = SETTING_NAV_RTH_ABORT_THRESHOLD_DEFAULT,                         // centimeters - 500m should be safe for all aircraft
-        .max_terrain_follow_altitude = SETTING_NAV_MAX_TERRAIN_FOLLOW_ALT_DEFAULT,              // max altitude in centimeters in terrain following mode
+        .rth_abort_threshold = SETTING_NAV_RTH_ABORT_THRESHOLD_DEFAULT,                         // centimetres - 500m should be safe for all aircraft
+        .max_terrain_follow_altitude = SETTING_NAV_MAX_TERRAIN_FOLLOW_ALT_DEFAULT,              // max altitude in centimetres in terrain following mode
         .safehome_max_distance = SETTING_SAFEHOME_MAX_DISTANCE_DEFAULT,                         // Max distance that a safehome is from the arming point
         .max_altitude = SETTING_NAV_MAX_ALTITUDE_DEFAULT,
         .rth_trackback_distance = SETTING_NAV_RTH_TRACKBACK_DISTANCE_DEFAULT,                   // Max distance allowed for RTH trackback
@@ -210,7 +210,7 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
         .max_manual_climb_rate = SETTING_NAV_FW_MANUAL_CLIMB_RATE_DEFAULT,                  // 3 m/s
         .max_climb_angle = SETTING_NAV_FW_CLIMB_ANGLE_DEFAULT,                              // degrees
         .max_dive_angle = SETTING_NAV_FW_DIVE_ANGLE_DEFAULT,                                // degrees
-        .cruise_speed = SETTING_NAV_FW_CRUISE_SPEED_DEFAULT,                                // cm/s
+        .cruise_speed = SETTING_NAV_FW_CRUISE_SPEED_DEFAULT,                                // centimetres/s
         .control_smoothness = SETTING_NAV_FW_CONTROL_SMOOTHNESS_DEFAULT,
         .pitch_to_throttle_smooth = SETTING_NAV_FW_PITCH2THR_SMOOTHING_DEFAULT,
         .pitch_to_throttle_thresh = SETTING_NAV_FW_PITCH2THR_THRESHOLD_DEFAULT,
@@ -223,7 +223,7 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
 
         // Fixed wing launch
         .launch_velocity_thresh = SETTING_NAV_FW_LAUNCH_VELOCITY_DEFAULT,                   // 3 m/s
-        .launch_accel_thresh = SETTING_NAV_FW_LAUNCH_ACCEL_DEFAULT,                         // cm/s/s (1.9*G)
+        .launch_accel_thresh = SETTING_NAV_FW_LAUNCH_ACCEL_DEFAULT,                         // centimetres/s/s (1.9*G)
         .launch_time_thresh = SETTING_NAV_FW_LAUNCH_DETECT_TIME_DEFAULT,                    // 40ms
         .launch_motor_timer = SETTING_NAV_FW_LAUNCH_MOTOR_DELAY_DEFAULT,                    // ms
         .launch_idle_motor_timer = SETTING_NAV_FW_LAUNCH_IDLE_MOTOR_DELAY_DEFAULT,          // ms
@@ -232,7 +232,7 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
         .launch_end_time = SETTING_NAV_FW_LAUNCH_END_TIME_DEFAULT,                          // ms, time to gradually decrease/increase throttle and decrease pitch angle from launch to the current flight mode
         .launch_min_time = SETTING_NAV_FW_LAUNCH_MIN_TIME_DEFAULT,                          // ms, min time in launch mode
         .launch_timeout = SETTING_NAV_FW_LAUNCH_TIMEOUT_DEFAULT,                            // ms, timeout for launch procedure
-        .launch_max_altitude = SETTING_NAV_FW_LAUNCH_MAX_ALTITUDE_DEFAULT,                  // cm, altitude where to consider launch ended
+        .launch_max_altitude = SETTING_NAV_FW_LAUNCH_MAX_ALTITUDE_DEFAULT,                  // centimetres, altitude where to consider launch ended
         .launch_climb_angle = SETTING_NAV_FW_LAUNCH_CLIMB_ANGLE_DEFAULT,                    // 18 degrees
         .launch_max_angle = SETTING_NAV_FW_LAUNCH_MAX_ANGLE_DEFAULT,                        // 45 deg
         .launch_manual_throttle = SETTING_NAV_FW_LAUNCH_MANUAL_THROTTLE_DEFAULT,            // OFF
@@ -2752,7 +2752,7 @@ static fpVector3_t * rthGetHomeTargetPosition(rthTargetMode_e mode)
         case RTH_HOME_FINAL_LAND:
             // if WP mission p2 > 0 use p2 value as landing elevation (in meters !) (otherwise default to takeoff home elevation)
             if (FLIGHT_MODE(NAV_WP_MODE) && posControl.waypointList[posControl.activeWaypointIndex].action == NAV_WP_ACTION_LAND && posControl.waypointList[posControl.activeWaypointIndex].p2 != 0) {
-                posControl.rthState.homeTmpWaypoint.z = posControl.waypointList[posControl.activeWaypointIndex].p2 * 100;   // 100 -> m to cm
+                posControl.rthState.homeTmpWaypoint.z = posControl.waypointList[posControl.activeWaypointIndex].p2 * 100;   // 100 -> m to centimetres
                 if (waypointMissionAltConvMode(posControl.waypointList[posControl.activeWaypointIndex].p3) == GEO_ALT_ABSOLUTE) {
                     posControl.rthState.homeTmpWaypoint.z -= posControl.gpsOrigin.alt;  // correct to relative if absolute SL altitude datum used
                 }

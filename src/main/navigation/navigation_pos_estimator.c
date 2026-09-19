@@ -64,7 +64,7 @@ PG_RESET_TEMPLATE(positionEstimationConfig_t, positionEstimationConfig,
         .automatic_mag_declination = SETTING_INAV_AUTO_MAG_DECL_DEFAULT,
         .reset_altitude_type = SETTING_INAV_RESET_ALTITUDE_DEFAULT,
         .reset_home_type = SETTING_INAV_RESET_HOME_DEFAULT,
-        .gravity_calibration_tolerance = SETTING_INAV_GRAVITY_CAL_TOLERANCE_DEFAULT,  // 5 cm/s/s calibration error accepted (0.5% of gravity)
+        .gravity_calibration_tolerance = SETTING_INAV_GRAVITY_CAL_TOLERANCE_DEFAULT,  // 5 centimetres/s/s calibration error accepted (0.5% of gravity)
         .allow_dead_reckoning = SETTING_INAV_ALLOW_DEAD_RECKONING_DEFAULT,
 
         .max_surface_altitude = SETTING_INAV_MAX_SURFACE_ALTITUDE_DEFAULT,

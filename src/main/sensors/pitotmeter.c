@@ -266,7 +266,7 @@ STATIC_PROTOTHREAD(pitotThread)
             pitot.pressure = pt1FilterApply3(&pitot.lpfState, pitotPressureTmp, US2S(currentTimeUs - pitot.lastMeasurementUs));
             pitot.lastMeasurementUs = currentTimeUs;
 
-            pitot.airSpeed = pitotmeterConfig()->pitot_scale * fast_fsqrtf(2.0f * fabsf(pitot.pressure - pitot.pressureZero) / SSL_AIR_DENSITY) * 100;  // cm/s
+            pitot.airSpeed = pitotmeterConfig()->pitot_scale * fast_fsqrtf(2.0f * fabsf(pitot.pressure - pitot.pressureZero) / SSL_AIR_DENSITY) * 100;  // centimetres/s
             pitot.temperature = pitotTemperatureTmp;   // Kelvin
 
         } else {

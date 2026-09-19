@@ -58,7 +58,7 @@ void rthTrackBackUpdate(bool forceSaveTrackPoint)
 
     // Record trackback points based on significant change in course/altitude until points limit reached. Overwrite older points from then on.
     if (posControl.flags.estPosStatus >= EST_USABLE && posControl.flags.estAltStatus >= EST_USABLE) {
-        static int32_t previousTBTripDist;      // cm
+        static int32_t previousTBTripDist;      // centimetres
         static int16_t previousTBCourse;        // degrees
         static int16_t previousTBAltitude;      // meters
         static uint8_t distanceCounter = 0;

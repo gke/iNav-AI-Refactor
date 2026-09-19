@@ -825,7 +825,7 @@ static int geoZoneRTComp(const void *a, const void *b)
     }
 }
 
-// in cm and cms/s
+// in centimetres and cms/s
 static uint32_t calcTime(const int32_t distance, const int32_t speed)
 {
     if (speed <= 0) {

@@ -579,7 +579,7 @@ static void updatePositionAccelController_MC(timeDelta_t deltaMicros, float maxA
         accelLimitY = accelLimitX;
     }
 
-    // Apply additional jerk limiting of 1700 cm/s^3 (~100 deg/s), almost any copter should be able to achieve this rate
+    // Apply additional jerk limiting of 1700 centimetres/s^3 (~100 deg/s), almost any copter should be able to achieve this rate
     // This will assure that we wont't saturate out LEVEL and RATE PID controller
 
     float maxAccelChange = US2S(deltaMicros) * MC_POS_CONTROL_JERK_LIMIT_CMSSS;
@@ -851,7 +851,7 @@ bool isMulticopterLandingDetected(void)
 
     const float sensitivity = navConfig()->general.land_detect_sensitivity / 5.0f;
 
-    // check vertical and horizontal velocities are low (cm/s)
+    // check vertical and horizontal velocities are low (centimetres/s)
     bool velCondition = fabsf(navGetCurrentActualPositionAndVelocity()->vel.z) < (MC_LAND_CHECK_VEL_Z_MOVING * sensitivity) &&
                         posControl.actualState.velXY < (MC_LAND_CHECK_VEL_XY_MOVING * sensitivity);
     // check gyro rates are low (degs/s)

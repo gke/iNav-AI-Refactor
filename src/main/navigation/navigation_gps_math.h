@@ -75,13 +75,13 @@ static inline int32_t doubleToDeg1e7(double deg)
     return (int32_t)lrint(deg * 1e7);
 }
 
-// Integer centimeters to double meters
+// Integer centimetres to double meters
 static inline double cmToMeters(int32_t cm)
 {
     return cm * 0.01;
 }
 
-// Double meters to integer centimeters (with rounding)
+// Double meters to integer centimetres (with rounding)
 static inline int32_t metersToCm(double m)
 {
     return (int32_t)lrint(m * 100.0);

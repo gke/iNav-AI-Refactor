@@ -793,7 +793,7 @@ bool isFixedWingLandingDetected(void)
 
     const timeMs_t currentTimeMs = millis();
 
-    // Check horizontal and vertical velocities are low (cm/s)
+    // Check horizontal and vertical velocities are low (centimetres/s)
     bool velCondition = fabsf(navGetCurrentActualPositionAndVelocity()->vel.z) < (50.0f * sensitivity) &&
                         ( posControl.actualState.velXY < (100.0f * sensitivity));
     // Check angular rates are low (degs/s)
