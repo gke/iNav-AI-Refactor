@@ -70,6 +70,11 @@ float unitLengthToDecimetres(float metres);
 float unitVelocityFromCmPerSecond(int32_t centimetresPerSecond);
 float unitVelocityToCmPerSecond(float metresPerSecond);
 
+// --- Time: wire microseconds <-> seconds (SI) ---
+
+float unitTimeFromMicros(int32_t micros);
+int32_t unitTimeToMicros(float seconds);
+
 // --- Voltage: wire volts <-> volts (SI) ---
 
 float unitVoltageFromCentivolts(int32_t centivolts);
