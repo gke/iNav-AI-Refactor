@@ -10,8 +10,8 @@
 set -e
 BOARD="$1"
 [ -n "$BOARD" ] || { echo "usage: tools/fwbuild.sh <BOARD>"; exit 1; }
-cd "$(dirname "$0")/.."
-ROOT="$PWD"
+SELF=$(readlink -f "$0")
+ROOT="$(cd "$(dirname "$SELF")/../.." && pwd)"
 TCBIN="$ROOT/tools/arm-gnu-toolchain-13.2.rel1/bin"
 GEN="$ROOT/build/standalone/$BOARD"
 D="$GEN/obj/fw"
