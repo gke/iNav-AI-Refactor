@@ -35,6 +35,16 @@ RULES = [
 
 EXTENSIONS = (".c", ".h")
 
+# Feature-test macros and compiler/libc contract macros: names that are fixed
+# externally (libc, POSIX, the toolchain) and must NOT be renamed or re-cased,
+# no matter what rule 11 says.  Their spelling is the contract, not our style.
+FEATURE_TEST_MACROS = frozenset([
+    "_GNU_SOURCE", "_POSIX_C_SOURCE", "_POSIX_SOURCE", "_DEFAULT_SOURCE",
+    "_BSD_SOURCE", "_XOPEN_SOURCE", "_XOPEN_SOURCE_EXTENDED",
+    "_LARGEFILE_SOURCE", "_LARGEFILE64_SOURCE", "_FILE_OFFSET_BITS",
+    "_REENTRANT", "_THREAD_SAFE", "_ISOC99_SOURCE",
+])
+
 
 def strip_comments(text):
     """Remove /* */ and // comments but keep code.  A line-based approximation."""
@@ -114,10 +124,17 @@ def score_file(path):
         m = re.match(r'#\s*define\s+([A-Za-z_]\w*)', cd)
         if m:
             name = m.group(1)
-            if not name.isupper() or name.startswith('_'):
-                bad = (not name.isupper()) or name.startswith('_')
-                if bad:
-                    add('r11_macro_case', i, raw)
+            # Symbol-alias #define (replacement is a bare identifier): it names
+            # an existing symbol (function junction / renamed contract), not a
+            # new constant -- identifier-case is its contract, like feature-test
+            # macros. Exempt.
+            rhs = cd[m.end():].strip()
+            if not re.fullmatch(r'[A-Za-z_]\w*', rhs):
+                # Feature-test/contract macros are exempt: their spelling is
+                # the external contract (libc, POSIX), not codebase style.
+                if name not in FEATURE_TEST_MACROS:
+                    if not name.isupper() or name.startswith('_'):
+                        add('r11_macro_case', i, raw)
         # r12 block comments in code (not file-header, not straddled)
         if '/*' in raw and i > 12 and not re.search(r'[^;\s]\s*/\*.*\*/', raw):
             add('r12_slash_comment', i, raw)
@@ -125,7 +142,13 @@ def score_file(path):
         if re.search(r'typedef\s+(struct|union|enum)\b', cd):
             add('r13_no_typedef', i, raw)
         # r14 magic numbers: numeric literals other than 0,1
+        is_define = bool(re.match(r'#\s*define\s+', cd))
         for m in re.finditer(r'(?<![\w.])0x[0-9A-Fa-f]+|(?<![\w.])\.?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[fFuUlL]*', cd):
+            # a #define line gives the constant a NAME -- by rule 14 exemptions
+            # (protocol/datasheet/semantic constants) that is no longer magic.
+            # Rule 14 targets naked literals inside code, not named constants.
+            if is_define:
+                break
             tok = m.group(0)
             base = tok.lower().rstrip('ful')
             if base in ('0', '0.0', '1', '1.0'):

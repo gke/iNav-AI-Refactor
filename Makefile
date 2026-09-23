@@ -6,17 +6,24 @@
 # Mirrors the shape of the sibling UAVXArmQ Makefile (local arm-none-eabi
 # toolchain, per-board recipe, offline).
 #
-# Locked target is BLUEBERRYF405 (AGENT.md). The F4 recipe below is the
-# exact include/define set the CMake build used for it. F7/H7/AT32 tables are
-# best-effort so any board can be TU-verified; the real gate stays the
-# locked F4 target.
+# Default `make` (and `make boards`) sweeps EVERY target that has both a
+# target.h and a CMakeLists.txt (the same set the CMake build picks up via
+# `add_subdirectory(target)`), EXCEPT SITL (host/native build, cannot be
+# TU-verified with an ARM toolchain) and dormant dirs such as RADIX that
+# upstream itself does not build.  `make BOARD=X` verifies a single board.
+#
+# The MCU family/device/flash-size table below mirrors the define sets the
+# CMake side derives from each board's CMakeLists.txt macro
+# (target_stm32f405xg / target_stm32f722xe / ...).  Do not re-derive family
+# from target.h - the MCU lives in the CMakeLists macro, not the header.
 #
 # Usage (from the repo root):
-#   make                 build nucleus + TU-verify every seat consumer (OFF & ON)
-#   make nu              compile the mapping nucleus unit_map.o
+#   make                 build all targets: nucleus + TU-verify seats OFF&ON
+#   make boards          same as `make`
+#   make nu              compile the mapping nucleus unit_map.o (default board)
 #   make settings        (re)generate settings_generated.{c,h} via the Python port
-#   make tu              TU-verify every seat consumer, OFF and ON
-#   make tu BOARD=X      choose another target (default BLUEBERRYF405)
+#   make tu              TU-verify every seat consumer, OFF and ON (default board)
+#   make BOARD=X         verify a single board (all of the above with BOARD=X)
 #   make td              disassembly differential seat-OFF vs seat-ON (informational)
 #   make flagscheck      echo the active CC / FAMILY / DEFS / INCS
 #   make clean           remove build/standalone artifacts
@@ -25,7 +32,7 @@
 SHELL := /bin/bash
 
 #-------------------------------------------------------------
-# Board (locked default) and repo layout
+# Board (default) and repo layout
 #-------------------------------------------------------------
 BOARD     ?= BLUEBERRYF405
 SRC_DIR   := src/main
@@ -37,6 +44,13 @@ SETTINGS_STAMP := $(SETTINGS_BIN).stamp
 SETTINGS_H := $(SETTINGS_BIN)/settings_generated.h
 SETTINGS_C := $(SETTINGS_BIN)/settings_generated.c
 TOOLS_PY  := src/utils/settings.py
+BUILD_LOG := $(GEN_DIR)/build.log
+
+ALL_BOARDS := $(sort $(foreach d,$(wildcard $(SRC_DIR)/target/*/),\
+  $(if $(wildcard $(d)target.h),$(if $(wildcard $(d)CMakeLists.txt),$(patsubst $(SRC_DIR)/target/%/,%,$(d)),),)))
+# SITL is a host/native build (uses sys/socket.h and a host toolchain); it is
+# not TU-verifiable with arm-none-eabi here.
+ALL_BOARDS := $(filter-out SITL,$(ALL_BOARDS))
 
 ifeq ($(wildcard $(TARGET_DIR)/target.h),)
 $(error Board '$(BOARD)' not found: no $(TARGET_DIR)/target.h)
@@ -66,27 +80,42 @@ CXX := $(TCBIN)/arm-none-eabi-g++
 OD  := $(TCBIN)/arm-none-eabi-objdump
 
 #-------------------------------------------------------------
-# MCU family detection from the board target.h
+# MCU family / device / flash from the board's CMakeLists macro.
+# Table rows:  macro:FAMILY:FLAGS-PIPE-JOINED:flash_KiB
+# The -D flags are pipe-joined so each row is exactly 4 colon fields.
 #-------------------------------------------------------------
-ifneq ($(shell grep -c 'STM32H7' $(TARGET_DIR)/target.h 2>/dev/null),0)
-  FAMILY := H7
-else ifneq ($(shell grep -c 'STM32F7' $(TARGET_DIR)/target.h 2>/dev/null),0)
-  FAMILY := F7
-else ifneq ($(shell grep -c 'AT32' $(TARGET_DIR)/target.h 2>/dev/null),0)
-  FAMILY := AT32
-else
-  FAMILY := F4
+MCU_MACRO := $(shell grep -m1 -oE 'target_(stm32|at32)[A-Za-z0-9_]+' $(TARGET_DIR)/CMakeLists.txt 2>/dev/null)
+
+MCU_TABLE := \
+  target_stm32f405xg:F4:-DSTM32F4|-DUSE_STDPERIPH_DRIVER|-DSTM32F40_41xxx|-DSTM32F405xx:1024 \
+  target_stm32f411xe:F4:-DSTM32F4|-DUSE_STDPERIPH_DRIVER|-DSTM32F411xE:512 \
+  target_stm32f427xg:F4:-DSTM32F4|-DUSE_STDPERIPH_DRIVER|-DSTM32F427_437xx:1024 \
+  target_stm32f722xe:F7:-DSTM32F7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32F722xx|-DSTM32F722XE:512 \
+  target_stm32f745xg:F7:-DSTM32F7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32F745xx|-DSTM32F745XG:1024 \
+  target_stm32f765xg:F7:-DSTM32F7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32F765xx|-DSTM32F765XG:1024 \
+  target_stm32f765xi:F7:-DSTM32F7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32F765xx|-DSTM32F765XI:2048 \
+  target_stm32h743xi:H7:-DSTM32H7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32H743xx|-DSTM32H743XI:2048 \
+  target_stm32h7a3xi:H7:-DSTM32H7|-DUSE_HAL_DRIVER|-DUSE_FULL_LL_DRIVER|-DSTM32H7A3xx|-DSTM32H7A3XI:2048 \
+  target_at32f43x_xGT7:AT32:-DAT32F43x|-DUSE_STDPERIPH_DRIVER|-DAT32F435RGT7:1024 \
+  target_at32f43x_xMT7:AT32:-DAT32F43x|-DUSE_STDPERIPH_DRIVER|-DAT32F437VMT7:4032
+
+MCU_ROW := $(foreach row,$(MCU_TABLE),$(if $(findstring $(MCU_MACRO):,$(row):),$(strip $(row))))
+ifeq ($(strip $(MCU_ROW)),)
+  MCU_ROW := target_unknown:F4:-DSTM32F4|-DUSE_STDPERIPH_DRIVER|-DSTM32F40_41xxx|-DSTM32F405xx:1024
 endif
 
-# Per-family board defines pulled from target.h where small, explicit elsewhere.
-T_DEVICE := $(shell grep -oE 'STM32F4[0-9]+xx|STM32F7[0-9]+xx|STM32H7[0-9]+xx|AT32F43[0-9]' $(TARGET_DIR)/target.h 2>/dev/null | sort -u | head -1)
-T_HSE    := $(shell grep -oE 'HSE_VALUE[[:space:]]+[0-9]+' $(TARGET_DIR)/target.h 2>/dev/null | grep -oE '[0-9]+$$' | head -1)
-DEVICE   ?= $(if $(T_DEVICE),$(T_DEVICE),STM32F405xx)
+FAMILY       := $(word 2,$(subst :, ,$(MCU_ROW)))
+DEVICE_FLAGS := $(subst |, ,$(word 3,$(subst :, ,$(MCU_ROW))))
+MCU_FLASH_SIZE := $(word 4,$(subst :, ,$(MCU_ROW)))
+
+T_HSE := $(shell grep -oE 'HSE_VALUE[[:space:]]+[0-9]+' $(TARGET_DIR)/target.h 2>/dev/null | grep -oE '[0-9]+$$' | head -1)
 HSE_VALUE ?= $(if $(T_HSE),$(T_HSE),8000000)
-MCU_FLASH_SIZE ?= 1024
 
 #-------------------------------------------------------------
-# Compiler flags
+# Compiler flags.
+# COMMON (family base) per-FAMILY cpu/flags below; device-specific defines in
+# DEVICE_FLAGS (from the CMakeLists macro table above).  Do NOT re-add device
+# defines here - the CMake build never does.
 #-------------------------------------------------------------
 ifeq ($(FAMILY),F7)
   FAMILY_DEFS := -D__FPU_PRESENT=1 -DSTM32F7 -DARM_MATH_CM7 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING
@@ -98,7 +127,7 @@ else ifeq ($(FAMILY),AT32)
   FAMILY_DEFS := -D__FPU_PRESENT=1 -DAT32F43x -DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING
   FAMILY_CPU  := -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 else
-  FAMILY_DEFS := -D__FPU_PRESENT=1 -DSTM32F4 -DSTM32F40_41xxx -DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING
+  FAMILY_DEFS := -D__FPU_PRESENT=1 -DSTM32F4 -DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING
   FAMILY_CPU  := -mthumb -mcpu=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16
 endif
 
@@ -108,8 +137,8 @@ COMMON_FLAGS := -ggdb3 -DNDEBUG -std=gnu99 -ffunction-sections -fdata-sections \
 
 DEFS := -D$(BOARD) -D__FORKNAME__=inav -D__TARGET__="$(BOARD)" -D__REVISION__="$(REV)" \
 	-DFC_VERSION_MAJOR=9 -DFC_VERSION_MINOR=1 -DFC_VERSION_PATCH_LEVEL=0 \
-	-DHSE_VALUE=$(HSE_VALUE) -DMCU_FLASH_SIZE=$(MCU_FLASH_SIZE) -D$(DEVICE) \
-	-DUNALIGNED_SUPPORT_DISABLE -DUSE_USB_MSC $(FAMILY_DEFS) $(T_EXTRA_DEFS)
+	-DHSE_VALUE=$(HSE_VALUE) -DMCU_FLASH_SIZE=$(MCU_FLASH_SIZE) \
+	-DUNALIGNED_SUPPORT_DISABLE -DUSE_USB_MSC $(FAMILY_DEFS) $(DEVICE_FLAGS) $(T_EXTRA_DEFS)
 # Feature gates (USE_ADC, USE_GPS, USE_POWER_LIMITS, ...) come from the
 # headers (target.h / common.h) exactly as in the CMake build; do not -D them.
 
@@ -171,10 +200,22 @@ NUCLEUS_O := $(OBJ_DIR)/mapping/unit_map.o
 #-------------------------------------------------------------
 # Targets
 #-------------------------------------------------------------
-.PHONY: all nu settings tu td flagscheck clean help
+.PHONY: all boards nu settings tu td flagscheck clean help
 
-all: nu tu
-	@echo "== iNavgke standalone OK: nucleus + $(words $(TU_SRC)) seat consumer TU(s), OFF & ON =="
+all: boards
+
+boards:
+	@ok=0; fail=0; failed=""; \
+	for b in $(ALL_BOARDS); do \
+	  printf '== BOARD %-20s ' "$$b"; \
+	  if $(MAKE) BOARD=$$b nu tu >/tmp/opencode/board-$$b.log 2>&1; then \
+	    ok=$$((ok+1)); echo "OK"; \
+	  else \
+	    fail=$$((fail+1)); failed="$$failed $$b"; echo "FAIL (see /tmp/opencode/board-$$b.log)"; \
+	  fi; \
+	done; \
+	echo "== all-target sweep: $$ok OK, $$fail failed =="; \
+	if [ $$fail -gt 0 ]; then echo "FAILED:$$failed"; exit 1; fi
 
 nu: $(NUCLEUS_O)
 	@echo "== nucleus: $(NUCLEUS_O) ($(shell wc -c < $(NUCLEUS_O) 2>/dev/null) bytes) =="
@@ -198,25 +239,29 @@ td: tu
 
 flagscheck:
 	@echo "CC       : $(CC)"
-	@echo "FAMILY   : $(FAMILY)  DEVICE=$(DEVICE)  HSE_VALUE=$(HSE_VALUE)"
+	@echo "BOARD    : $(BOARD)  FAMILY=$(FAMILY)  MCU_FLASH_SIZE=$(MCU_FLASH_SIZE)  HSE_VALUE=$(HSE_VALUE)"
+	@echo "MCU_ROW  : $(MCU_ROW)"
 	@echo "DEFS     : $(DEFS)"
 	@echo "INCS     : $(INCS)"
 	@echo "SEAT_TUs : $(TU_SRC)"
+	@echo "ALL_BOARDS ($(words $(ALL_BOARDS))): $(ALL_BOARDS)"
 
 clean:
-	@rm -rf $(GEN_DIR)
-	@echo "== removed $(GEN_DIR) =="
+	@rm -rf build/standalone
+	@echo "== removed build/standalone =="
 
 help:
 	@echo "iNavgke standalone build harness (GKE unit-mapping seats)"
-	@echo "  make            nucleus + seat TU verification (OFF & ON)"
-	@echo "  make nu         compile mapping nucleus"
+	@echo "  make            sweep ALL targets: nucleus + seat TU verification (OFF & ON)"
+	@echo "  make boards     same as make"
+	@echo "  make nu         compile mapping nucleus (default board)"
 	@echo "  make settings   regenerate settings_generated via Python port"
-	@echo "  make tu         TU-verify all seat consumers"
+	@echo "  make tu         TU-verify all seat consumers (default board)"
 	@echo "  make td         seat-OFF vs seat-ON disassembly differential"
-	@echo "  make flagscheck echo active CC/FAMILY/DEFS/INCS"
-	@echo "  make BOARD=X    choose a board (default BLUEBERRYF405)"
-	@echo "  make clean      remove build/standalone/$(BOARD)"
+	@echo "  make flagscheck echo active CC/FAMILY/DEFS/INCS + all-board list"
+	@echo "  make BOARD=X    verify a single board (default BLUEBERRYF405)"
+	@echo "  make clean      remove build/standalone"
+	@echo "Sweep excludes SITL (host build) and any dir with no CMakeLists.txt."
 
 #-------------------------------------------------------------
 # Rules
