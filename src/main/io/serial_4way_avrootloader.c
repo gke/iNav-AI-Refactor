@@ -16,6 +16,7 @@
  * Author: 4712
  * for info about Hagens AVRootloader:
  * http://www.mikrocontroller.net/topic/avr-bootloader-mit-verschluesselung
+* Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
 */
 
 #include <stdbool.h>

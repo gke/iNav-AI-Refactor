@@ -42,6 +42,7 @@ namespace mavlink {
  * type (without type conversion)
  * and re-instanted on the receiving side using the
  * native type as well.
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 MAVPACKED(
 typedef struct param_union {

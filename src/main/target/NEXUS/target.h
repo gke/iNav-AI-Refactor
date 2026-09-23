@@ -20,6 +20,7 @@
  *   - Rotorflight NEXUS_F7 target (authoritative)
  *   - groundflight project (joshperry/groundflight)
  *   - RadioMaster documentation
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #pragma once

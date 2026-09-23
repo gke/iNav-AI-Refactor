@@ -19,6 +19,7 @@
  *   - initial implementation for MultiWii by Cesco/Plüschi
  *   - implementation for BaseFlight by Andreas (fiendie) Tacke
  *   - ported to CleanFlight by Konstantin (digitalentity) Sharlaimov
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include <stdbool.h>

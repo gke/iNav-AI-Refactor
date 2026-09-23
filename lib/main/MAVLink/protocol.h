@@ -6,6 +6,7 @@
 /* 
    If you want MAVLink on a system that is native big-endian,
    you need to define NATIVE_BIG_ENDIAN
+* Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
 */
 #ifdef NATIVE_BIG_ENDIAN
 # define MAVLINK_NEED_BYTE_SWAP (MAVLINK_ENDIAN == MAVLINK_LITTLE_ENDIAN)

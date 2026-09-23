@@ -13,6 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with INAV.  If not, see <http://www.gnu.org/licenses/>.
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #define MSP2_COMMON_TZ                      0x1001  //out message       Gets the TZ offset for the local time (returns: minutes(i16))

@@ -1,6 +1,7 @@
 /** @file
  *  @brief MAVLink comm protocol built from common.xml
  *  @see http://mavlink.org
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 #pragma once
  

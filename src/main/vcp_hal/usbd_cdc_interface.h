@@ -43,6 +43,7 @@
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
+  * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/

@@ -16,6 +16,7 @@
  * along with this software.
  *
  * If not, see <http://www.gnu.org/licenses/>.
+ * Modified 2026-09-23 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #pragma once

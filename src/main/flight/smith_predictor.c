@@ -23,6 +23,7 @@
  * 
  * This code is a derivative of work done in EmuFlight Project https://github.com/emuflight/EmuFlight
  *  
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include "platform.h"

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with INAV.  If not, see <http://www.gnu.org/licenses/>.
  * from atbetaflight https://github.com/flightng/atbetaflight
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include <stdbool.h>

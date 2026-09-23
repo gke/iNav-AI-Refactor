@@ -3,6 +3,7 @@
  *
  * Unlike the Nexus-X/XR, the OG Nexus has no internal ELRS receiver,
  * so there is no PINIO / USER1 box configuration needed here.
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include <stdint.h>

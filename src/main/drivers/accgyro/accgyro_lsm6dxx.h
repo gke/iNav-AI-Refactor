@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with INAV.  If not, see <http://www.gnu.org/licenses/>.
  * moved from atbetaflight https://github.com/flightng/atbetaflight by tcdddd
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #pragma once

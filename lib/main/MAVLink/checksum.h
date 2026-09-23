@@ -17,6 +17,7 @@ extern "C" {
  *
  *  CALCULATE THE CHECKSUM
  *
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #define X25_INIT_CRC 0xffff

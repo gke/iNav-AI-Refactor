@@ -22,6 +22,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  * @author Konstantin Sharlaimov (ksharlaimov@inavflight.com)
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include <stdbool.h>

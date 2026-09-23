@@ -1,3 +1,7 @@
+/*
+ * Modified 2026-09-23 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
+ */
+
 #include <string.h>
 #include <stdint.h>
 

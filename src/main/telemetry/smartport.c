@@ -1,6 +1,7 @@
 /*
  * SmartPort Telemetry implementation by frank26080115
  * see https://github.com/frank26080115/cleanflight/wiki/Using-Smart-Port
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 #include <stdbool.h>
 #include <stdint.h>

@@ -5,6 +5,7 @@
 
 /*
   return the message_info struct for a message
+* Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
 */
 MAVLINK_HELPER const mavlink_message_info_t *mavlink_get_message_info_by_id(uint32_t msgid)
 {

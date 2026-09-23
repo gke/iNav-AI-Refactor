@@ -18,6 +18,7 @@ namespace mavlink {
 
 /*
  * Internal function to give access to the channel status for each channel
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 #ifndef MAVLINK_GET_CHANNEL_STATUS
 MAVLINK_HELPER mavlink_status_t* mavlink_get_channel_status(uint8_t chan)

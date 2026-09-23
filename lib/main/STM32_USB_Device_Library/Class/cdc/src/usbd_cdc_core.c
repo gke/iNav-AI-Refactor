@@ -61,6 +61,7 @@
   * limitations under the License.
   *
   ******************************************************************************
+  * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
   */ 
 
 /* Includes ------------------------------------------------------------------*/

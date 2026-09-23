@@ -1,6 +1,7 @@
 /** @file
  *    @brief MAVLink comm protocol testsuite generated from minimal.xml
  *    @see http://qgroundcontrol.org/mavlink/
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 #pragma once
 #ifndef MINIMAL_TESTSUITE_H

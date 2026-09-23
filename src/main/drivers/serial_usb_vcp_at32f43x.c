@@ -16,6 +16,7 @@
  * author : emsr (shanggl@wo.cn)
  * hw_config is more modified and is implemented using emsr's VCP code
  * (implemented using timers)
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 
 #include <stdint.h>

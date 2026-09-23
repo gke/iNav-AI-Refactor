@@ -26,6 +26,7 @@
  *   - windHeading degrees
  * OUTPUT:
  *   returns same unit as horizontalWindSpeed
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
  */
 static float forwardWindSpeed(float heading, float horizontalWindSpeed, float windHeading) {
     return horizontalWindSpeed * cos_approx(DEGREES_TO_RADIANS(windHeading - heading));

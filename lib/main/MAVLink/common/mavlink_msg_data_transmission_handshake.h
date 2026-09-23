@@ -1,3 +1,7 @@
+/*
+ * Modified 2026-09-19 by Professor Gregory K. Egan, assisted by OpenCode and Big Pickle.
+ */
+
 #pragma once
 // MESSAGE DATA_TRANSMISSION_HANDSHAKE PACKING
 
