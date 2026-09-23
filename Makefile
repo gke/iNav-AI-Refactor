@@ -24,7 +24,7 @@
 #   make settings        (re)generate settings_generated.{c,h} via the Python port
 #   make tu              TU-verify every seat consumer, OFF and ON (default board)
 #   make fw / hex        build the full board firmware inav_9.1.0_<BOARD>.hex
-#                        (mirrors the CMake release build via tools/fwbuild.sh)
+#                        (mirrors the CMake release build via src/utils/fwbuild.sh)
 #   make BOARD=X         verify a single board (all of the above with BOARD=X)
 #   make td              disassembly differential seat-OFF vs seat-ON (informational)
 #   make flagscheck      echo the active CC / FAMILY / DEFS / INCS
@@ -47,7 +47,7 @@ SETTINGS_H := $(SETTINGS_BIN)/settings_generated.h
 SETTINGS_C := $(SETTINGS_BIN)/settings_generated.c
 TOOLS_PY  := src/utils/settings.py
 BUILD_LOG := $(GEN_DIR)/build.log
-FWBUILD   := tools/fwbuild.sh
+FWBUILD   := src/utils/fwbuild.sh
 FW_ELF    := $(GEN_DIR)/inav_9.1.0_$(BOARD).elf
 FW_HEX    := $(GEN_DIR)/inav_9.1.0_$(BOARD).hex
 
