@@ -28,21 +28,21 @@
 
 #define SOAP_REC_BUF_SIZE 256 * 1024
 
-typedef struct {
+struct soap_client {
     int sockedFd;
     struct sockaddr_in socketAddr;
     bool isInitalised;
     bool isConnected;
-} soap_client_t;
+};
 
-typedef struct {
-    soap_client_t client;
+struct send_info {
+    struct soap_client client;
     char* content;
-} send_info_t;
+};
 
 
-bool soapClientConnect(soap_client_t *client, const char *address, int port);
-void soapClientClose(soap_client_t *client);
-void soapClientSendRequestVa(soap_client_t *client, const char* action, const char *fmt, va_list va);
-void soapClientSendRequest(soap_client_t *client, const char* action, const char *fmt, ...);
-char* soapClientReceive(soap_client_t *client);
+bool soapClientConnect(struct soap_client *client, const char *address, int port);
+void soapClientClose(struct soap_client *client);
+void soapClientSendRequestVa(struct soap_client *client, const char* action, const char *fmt, va_list va);
+void soapClientSendRequest(struct soap_client *client, const char* action, const char *fmt, ...);
+char* soapClientReceive(struct soap_client *client);

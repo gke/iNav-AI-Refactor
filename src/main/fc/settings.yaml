@@ -1342,7 +1342,7 @@ groups:
         max: 60
 
   - name: PG_CONTROL_RATE_PROFILES
-    type: controlRateConfig_t
+    type: struct controlRateConfig_s
     headers: ["fc/controlrate_profile_config_struct.h"]
     value_type: CONTROL_RATE_VALUE
     members:

@@ -514,6 +514,9 @@ int w25n01g_readBytes(uint32_t address, uint8_t *buffer, int length)
         w25n01g_addError(address, eccCode);
         w25n01g_deviceReset();
         break;
+
+    default:
+        break;
     }
 
     return transferLength;

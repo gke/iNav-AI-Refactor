@@ -656,7 +656,7 @@ void processRx(timeUs_t currentTimeUs)
     if (!cliMode) {
         bool canUseRxData = rxIsReceivingSignal() && !FLIGHT_MODE(FAILSAFE_MODE);
         updateAdjustmentStates(canUseRxData);
-        processRcAdjustments(CONST_CAST(controlRateConfig_t*, currentControlRateProfile), canUseRxData);
+        processRcAdjustments(CONST_CAST(struct controlRateConfig_s*, currentControlRateProfile), canUseRxData);
     }
 
     // Angle mode forced on briefly after emergency inflight rearm to help stabilise attitude (currently limited to MR)

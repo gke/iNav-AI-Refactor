@@ -94,7 +94,7 @@ void autotuneUpdateGains(pidAutotuneData_t * data)
 {
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         pidBankMutable()->pid[axis].FF = lrintf(data[axis].gainFF);
-        ((controlRateConfig_t *)currentControlRateProfile)->stabilized.rates[axis] = lrintf(data[axis].rate/10.0f);
+        ((struct controlRateConfig_s *)currentControlRateProfile)->stabilized.rates[axis] = lrintf(data[axis].rate/10.0f);
     }
     schedulePidGainsUpdate();
 }

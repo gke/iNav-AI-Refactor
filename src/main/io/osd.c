@@ -5462,6 +5462,8 @@ static void osdShowStats(bool isSinglePageStatsCompatible, uint8_t page)
 #endif
 
                 break;
+            default:
+                break;
         }
     }
 
@@ -6254,6 +6256,8 @@ textAttributes_t osdGetSystemMessage(char *buff, size_t buff_size, bool isCenter
                     break;
                 case GEOZONE_MESSAGE_STATE_NONE:
                     break;
+                default:
+                    break;
             }
 #endif
                 /* Messages shown only when Failsafe, WP, RTH or Emergency Landing not active and landed state inactive */
@@ -6491,6 +6495,8 @@ static textAttributes_t osdGetMultiFunctionMessage(char *buff)
             message = ARMING_FLAG(ARMED) ? "NOW ARMED " : "EMERG ARM ";
             break;
         case MULTI_FUNC_END:
+            break;
+        default:
             break;
         }
 

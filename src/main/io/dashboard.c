@@ -68,7 +68,7 @@
 #include "config/feature.h"
 
 
-controlRateConfig_t *getControlRateConfig(uint8_t profileIndex);
+struct controlRateConfig_s *getControlRateConfig(uint8_t profileIndex);
 
 #define MICROSECONDS_IN_A_SECOND (1000 * 1000)
 

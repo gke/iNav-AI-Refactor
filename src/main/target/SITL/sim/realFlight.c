@@ -71,8 +71,8 @@ static pthread_cond_t sockcond1 = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t sockcond2 = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t sockmtx = PTHREAD_MUTEX_INITIALIZER;
 
-static soap_client_t *client = NULL;
-static soap_client_t *clientNext = NULL;
+static struct soap_client *client = NULL;
+static struct soap_client *clientNext = NULL;
 
 static pthread_t soapThread;
 static pthread_t creationThread;
@@ -133,7 +133,7 @@ typedef struct
 
 rfValues_t rfValues; 
 
-static void deleteClient(soap_client_t *client)
+static void deleteClient(struct soap_client *client)
 {
     soapClientClose(client);
     free(client);
@@ -445,7 +445,7 @@ static void* creationWorker(void* arg)
         }
         pthread_mutex_unlock(&sockmtx);
         
-        soap_client_t *cli = malloc(sizeof(soap_client_t));
+        struct soap_client *cli = malloc(sizeof(struct soap_client));
         if (!soapClientConnect(cli, ip, RF_PORT)) {
             continue;
         }

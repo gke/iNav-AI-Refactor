@@ -36,7 +36,7 @@
 static EXTENDED_FASTRAM int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
 int16_t lookupThrottleRCMid;                         // THROTTLE curve mid point
 
-void generateThrottleCurve(const controlRateConfig_t *controlRateConfig)
+void generateThrottleCurve(const struct controlRateConfig_s *controlRateConfig)
 {
     const int minThrottle = getThrottleIdleValue();
     lookupThrottleRCMid = minThrottle + (int32_t)(getMaxThrottle() - minThrottle) * controlRateConfig->throttle.rcMid8 / 100; // [MINTHROTTLE;MAXTHROTTLE]

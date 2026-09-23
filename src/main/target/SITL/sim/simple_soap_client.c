@@ -41,7 +41,7 @@
 #define REC_BUF_SIZE 6000
 char recBuffer[REC_BUF_SIZE];
 
-bool soapClientConnect(soap_client_t *client, const char *address, int port)
+bool soapClientConnect(struct soap_client *client, const char *address, int port)
 {
     client->sockedFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (client->sockedFd < 0) {
@@ -67,15 +67,15 @@ bool soapClientConnect(soap_client_t *client, const char *address, int port)
     return true;
 }
 
-void soapClientClose(soap_client_t *client)
+void soapClientClose(struct soap_client *client)
 {
     close(client->sockedFd);
-    memset(client, 0, sizeof(soap_client_t));
+    memset(client, 0, sizeof(struct soap_client));
     client->isConnected = false;
     client->isInitalised = false;
 }
 
-void soapClientSendRequestVa(soap_client_t *client, const char* action, const char *fmt, va_list va)
+void soapClientSendRequestVa(struct soap_client *client, const char* action, const char *fmt, va_list va)
 {
      if (!client->isConnected) {
         return;
@@ -98,7 +98,7 @@ void soapClientSendRequestVa(soap_client_t *client, const char* action, const ch
     free(request);
 }
 
-void soapClientSendRequest(soap_client_t *client, const char* action, const char *fmt, ...)
+void soapClientSendRequest(struct soap_client *client, const char* action, const char *fmt, ...)
 {
     va_list va;
 
@@ -107,7 +107,7 @@ void soapClientSendRequest(soap_client_t *client, const char* action, const char
     va_end(va);
 }
 
-static bool soapClientPoll(soap_client_t *client, uint32_t timeout_ms)
+static bool soapClientPoll(struct soap_client *client, uint32_t timeout_ms)
 {
     fd_set fds;
     struct timeval tv;
@@ -125,7 +125,7 @@ static bool soapClientPoll(soap_client_t *client, uint32_t timeout_ms)
 }
 
 
-char* soapClientReceive(soap_client_t *client)
+char* soapClientReceive(struct soap_client *client)
 {
      if (!client->isInitalised){
         return false;

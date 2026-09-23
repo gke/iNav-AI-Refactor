@@ -31,15 +31,15 @@
 #include "fc/rc_curves.h"
 #include "fc/settings.h"
 
-const controlRateConfig_t *currentControlRateProfile;
+const struct controlRateConfig_s *currentControlRateProfile;
 
 
-PG_REGISTER_ARRAY_WITH_RESET_FN(controlRateConfig_t, MAX_CONTROL_RATE_PROFILE_COUNT, controlRateProfiles, PG_CONTROL_RATE_PROFILES, 4);
+PG_REGISTER_ARRAY_WITH_RESET_FN(struct controlRateConfig_s, MAX_CONTROL_RATE_PROFILE_COUNT, controlRateProfiles, PG_CONTROL_RATE_PROFILES, 4);
 
-void pgResetFn_controlRateProfiles(controlRateConfig_t *instance)
+void pgResetFn_controlRateProfiles(struct controlRateConfig_s *instance)
 {
     for (int i = 0; i < MAX_CONTROL_RATE_PROFILE_COUNT; i++) {
-        RESET_CONFIG(controlRateConfig_t, &instance[i],
+        RESET_CONFIG(struct controlRateConfig_s, &instance[i],
             .throttle = {
                 .rcMid8 = SETTING_THR_MID_DEFAULT,
                 .rcExpo8 = SETTING_THR_EXPO_DEFAULT,

@@ -26,9 +26,9 @@
 
 #define MAX_CONTROL_RATE_PROFILE_COUNT SETTING_CONSTANT_MAX_CONTROL_RATE_PROFILE_COUNT
 
-PG_DECLARE_ARRAY(controlRateConfig_t, MAX_CONTROL_RATE_PROFILE_COUNT, controlRateProfiles);
+PG_DECLARE_ARRAY(struct controlRateConfig_s, MAX_CONTROL_RATE_PROFILE_COUNT, controlRateProfiles);
 
-extern const controlRateConfig_t *currentControlRateProfile;
+extern const struct controlRateConfig_s *currentControlRateProfile;
 
 void setControlRateProfile(uint8_t profileIndex);
 void changeControlRateProfile(uint8_t profileIndex);

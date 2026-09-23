@@ -373,7 +373,7 @@ static void applyAdjustmentPID(adjustmentFunction_e adjustmentFunction, uint16_t
     applyAdjustmentU16(adjustmentFunction, val, delta, SETTING_CONSTANT_RPYL_PID_MIN, SETTING_CONSTANT_RPYL_PID_MAX);
 }
 
-static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t adjustmentFunction, int delta)
+static void applyStepAdjustment(struct controlRateConfig_s *controlRateConfig, uint8_t adjustmentFunction, int delta)
 {
     if (delta > 0) {
         beeperConfirmationBeeps(2);
@@ -649,7 +649,7 @@ static void applySelectAdjustment(uint8_t adjustmentFunction, uint8_t position)
 
 #define RESET_FREQUENCY_2HZ (1000 / 2)
 
-void processRcAdjustments(controlRateConfig_t *controlRateConfig, bool canUseRxData)
+void processRcAdjustments(struct controlRateConfig_s *controlRateConfig, bool canUseRxData)
 {
     const uint32_t now = millis();
 

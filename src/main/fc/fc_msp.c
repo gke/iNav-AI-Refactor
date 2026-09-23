@@ -2001,23 +2001,23 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         if ((dataSize == 10) || (dataSize == 11)) {
             sbufReadU8(src); //Read rcRate8, kept for protocol compatibility reasons
             // need to cast away const to set controlRateProfile
-            ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcExpo8 = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->stabilized.rcExpo8 = sbufReadU8(src);
             for (int i = 0; i < 3; i++) {
                 tmp_u8 = sbufReadU8(src);
                 if (i == FD_YAW) {
-                    ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, SETTING_YAW_RATE_MIN, SETTING_YAW_RATE_MAX);
+                    ((struct controlRateConfig_s*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, SETTING_YAW_RATE_MIN, SETTING_YAW_RATE_MAX);
                 }
                 else {
-                    ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, SETTING_CONSTANT_ROLL_PITCH_RATE_MIN, SETTING_CONSTANT_ROLL_PITCH_RATE_MAX);
+                    ((struct controlRateConfig_s*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, SETTING_CONSTANT_ROLL_PITCH_RATE_MIN, SETTING_CONSTANT_ROLL_PITCH_RATE_MAX);
                 }
             }
             tmp_u8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.dynPID = MIN(tmp_u8, SETTING_TPA_RATE_MAX);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.rcMid8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.rcExpo8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.pa_breakpoint = sbufReadU16(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->throttle.dynPID = MIN(tmp_u8, SETTING_TPA_RATE_MAX);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->throttle.rcMid8 = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->throttle.rcExpo8 = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->throttle.pa_breakpoint = sbufReadU16(src);
             if (dataSize > 10) {
-                ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcYawExpo8 = sbufReadU8(src);
+                ((struct controlRateConfig_s*)currentControlRateProfile)->stabilized.rcYawExpo8 = sbufReadU8(src);
             }
 
             schedulePidGainsUpdate();
@@ -2028,7 +2028,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 
     case MSP2_INAV_SET_RATE_PROFILE:
         if (dataSize == 15) {
-            controlRateConfig_t *currentControlRateProfile_p = (controlRateConfig_t*)currentControlRateProfile; // need to cast away const to set controlRateProfile
+            struct controlRateConfig_s *currentControlRateProfile_p = (struct controlRateConfig_s*)currentControlRateProfile; // need to cast away const to set controlRateProfile
 
             // throttle
             currentControlRateProfile_p->throttle.rcMid8 = sbufReadU8(src);
@@ -3529,12 +3529,12 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
     case MSP2_INAV_SET_RATE_DYNAMICS:
 
         if (dataSize == 6) {
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.sensitivityCenter = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.sensitivityEnd = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.correctionCenter = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.correctionEnd = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.weightCenter = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->rateDynamics.weightEnd = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.sensitivityCenter = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.sensitivityEnd = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.correctionCenter = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.correctionEnd = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.weightCenter = sbufReadU8(src);
+            ((struct controlRateConfig_s*)currentControlRateProfile)->rateDynamics.weightEnd = sbufReadU8(src);
 
         } else {
             return MSP_RESULT_ERROR;
