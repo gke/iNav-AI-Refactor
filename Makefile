@@ -23,6 +23,8 @@
 #   make nu              compile the mapping nucleus unit_map.o (default board)
 #   make settings        (re)generate settings_generated.{c,h} via the Python port
 #   make tu              TU-verify every seat consumer, OFF and ON (default board)
+#   make fw / hex        build the full board firmware inav_9.1.0_<BOARD>.hex
+#                        (mirrors the CMake release build via tools/fwbuild.sh)
 #   make BOARD=X         verify a single board (all of the above with BOARD=X)
 #   make td              disassembly differential seat-OFF vs seat-ON (informational)
 #   make flagscheck      echo the active CC / FAMILY / DEFS / INCS
@@ -45,6 +47,9 @@ SETTINGS_H := $(SETTINGS_BIN)/settings_generated.h
 SETTINGS_C := $(SETTINGS_BIN)/settings_generated.c
 TOOLS_PY  := src/utils/settings.py
 BUILD_LOG := $(GEN_DIR)/build.log
+FWBUILD   := tools/fwbuild.sh
+FW_ELF    := $(GEN_DIR)/inav_9.1.0_$(BOARD).elf
+FW_HEX    := $(GEN_DIR)/inav_9.1.0_$(BOARD).hex
 
 ALL_BOARDS := $(sort $(foreach d,$(wildcard $(SRC_DIR)/target/*/),\
   $(if $(wildcard $(d)target.h),$(if $(wildcard $(d)CMakeLists.txt),$(patsubst $(SRC_DIR)/target/%/,%,$(d)),),)))
@@ -111,6 +116,12 @@ MCU_FLASH_SIZE := $(word 4,$(subst :, ,$(MCU_ROW)))
 T_HSE := $(shell grep -oE 'HSE_VALUE[[:space:]]+[0-9]+' $(TARGET_DIR)/target.h 2>/dev/null | grep -oE '[0-9]+$$' | head -1)
 HSE_VALUE ?= $(if $(T_HSE),$(T_HSE),8000000)
 
+# Feature gates for the firmware build (MSC = FLASHFS or SDCARD).  These mirror
+# get_stm32_target_features in cmake/stm32.cmake; only these feed the build-time
+# defines.  All other gates (USE_ADC, USE_GPS, ...) come from the headers.
+T_TARGET_H := $(TARGET_DIR)/target.h
+MSC_FEATURE := $(if $(or $(shell grep -c 'define[[:space:]]\+USE_FLASHFS' $(T_TARGET_H) 2>/dev/null),$(shell grep -c 'define[[:space:]]\+USE_SDCARD' $(T_TARGET_H) 2>/dev/null)),1,0)
+
 #-------------------------------------------------------------
 # Compiler flags.
 # COMMON (family base) per-FAMILY cpu/flags below; device-specific defines in
@@ -138,9 +149,12 @@ COMMON_FLAGS := -ggdb3 -DNDEBUG -std=gnu99 -ffunction-sections -fdata-sections \
 DEFS := -D$(BOARD) -D__FORKNAME__=inav -D__TARGET__="$(BOARD)" -D__REVISION__="$(REV)" \
 	-DFC_VERSION_MAJOR=9 -DFC_VERSION_MINOR=1 -DFC_VERSION_PATCH_LEVEL=0 \
 	-DHSE_VALUE=$(HSE_VALUE) -DMCU_FLASH_SIZE=$(MCU_FLASH_SIZE) \
-	-DUNALIGNED_SUPPORT_DISABLE -DUSE_USB_MSC $(FAMILY_DEFS) $(DEVICE_FLAGS) $(T_EXTRA_DEFS)
+	-DUNALIGNED_SUPPORT_DISABLE $(if $(MSC_FEATURE),-DUSE_USB_MSC,) \
+	$(FAMILY_DEFS) $(DEVICE_FLAGS) $(T_EXTRA_DEFS)
 # Feature gates (USE_ADC, USE_GPS, USE_POWER_LIMITS, ...) come from the
 # headers (target.h / common.h) exactly as in the CMake build; do not -D them.
+# USE_USB_MSC is only defined when the board has FLASHFS or SDCARD (MSC), as
+# target_at_stm32 / target_at32 do via the features list.
 
 #-------------------------------------------------------------
 # Include sets (relative to repo root). Prepend the generated-settings dir
@@ -200,7 +214,7 @@ NUCLEUS_O := $(OBJ_DIR)/mapping/unit_map.o
 #-------------------------------------------------------------
 # Targets
 #-------------------------------------------------------------
-.PHONY: all boards nu settings tu td flagscheck clean help
+.PHONY: all boards nu settings tu td flagscheck fw hex clean help
 
 all: boards
 
@@ -246,6 +260,11 @@ flagscheck:
 	@echo "SEAT_TUs : $(TU_SRC)"
 	@echo "ALL_BOARDS ($(words $(ALL_BOARDS))): $(ALL_BOARDS)"
 
+fw: hex
+
+hex: settings
+	@$(FWBUILD) $(BOARD)
+
 clean:
 	@rm -rf build/standalone
 	@echo "== removed build/standalone =="
@@ -258,6 +277,7 @@ help:
 	@echo "  make settings   regenerate settings_generated via Python port"
 	@echo "  make tu         TU-verify all seat consumers (default board)"
 	@echo "  make td         seat-OFF vs seat-ON disassembly differential"
+	@echo "  make fw / hex   build the real firmware inav_9.1.0_$(BOARD).hex (default board)"
 	@echo "  make flagscheck echo active CC/FAMILY/DEFS/INCS + all-board list"
 	@echo "  make BOARD=X    verify a single board (default BLUEBERRYF405)"
 	@echo "  make clean      remove build/standalone"
