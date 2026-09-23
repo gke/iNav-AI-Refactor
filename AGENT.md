@@ -122,9 +122,20 @@ Style:
     ```
 
 Types:
-16. `real32` for physical quantities end-to-end (FC struct fields, wire
+17. `real32` for physical quantities end-to-end (FC struct fields, wire
     packets, GCS models, .af config); integers only for genuinely raw/quantised
     data (GPS 1e7, ADC/PWM counts, enums, channel indices).
+    Note (GPS): coordinates are NOT routed through the mapping module.  They
+    stay int32 1e-7 degrees end to end; internal mission math converts them to
+    origin-relative local metres by exact int32 delta subtraction in
+    `geoConvertGeodeticToLocal()` (longitude scaled by cos(lat)).  No float
+    conversion, so no real32 deviation is needed.
+18. Follow MISRA C:2012 (Mandatory + Required directives) for all new and
+    edited code. Adopted wholesale: no dynamic allocation (21.3), no recursion
+    (17.2), explicit boolean types (10.4/10.5), every `switch` has a `default`
+    (16.4), loop bounds fixed and explicit (14.1/14.2). Deviations — note the
+    reason at the site: MISRA 15.6 (compound bodies) yields to rule 3; MISRA
+    15.7 (mandatory finite `else`) yields to an exhaustive `else if` chain.
 
 Naming specifics:
 - param names in params.c start with lowercase `p`.
@@ -141,13 +152,16 @@ Fork deltas (documented decisions):
 - Rule 3 applies to control-flow braces; function closing braces get tagged:
   `} // function_name`.
 - `real32` internals apply per the unit-mapping note above — the wire/persistence
-  defs are frozen, so item 16's "wire packets" stay in legacy int units until
+  defs are frozen, so item 17's "wire packets" stay in legacy int units until
   converted at the boundary by the mapping module.
 
 ### Verification
 
-There is no C compiler in the current sandbox. Treat grep/structural checks as
-provisional and build-verify before flying.
+An on-box `arm-none-eabi` toolchain is available for build-verification
+(`tools/arm-gnu-toolchain-13.2.rel1` and `~/toolchain/xpack-arm-none-eabi-gcc-15.2.1-1.1`);
+`make` at the repo root TU-verifies the mapping seats. Treat any grep/structural
+compliance check as provisional — the build is the arbiter, and changes must be
+compile-verified before flying.
 
 ### Unit mapping architecture (decision note)
 
@@ -164,7 +178,11 @@ SI internals used everywhere else:
 - voltage ↔ centivolt/decivolt, internal volts
 - current ↔ centiampere, internal amperes
 - temperature ↔ decidegreeC, internal °C
-- lat/lon ↔ int32 1e-7°, internal radians
+- GPS lat/lon: NOT shimmed — stays int32 1e-7° end to end (wire, MSP_WP,
+  PG, blackbox, GPS datagram).  Internal geodetic→local-metres conversion is
+  done in `geoConvertGeodeticToLocal()`: exact int32 delta of e7 counts × a
+  cm-per-count constant, longitude scaled by `cos(lat)`.  No float or double
+  layer involved.
 
 Rules:
 - Internal state uses SI floats (radians, metres, m/s, V, A, °C). No subsystem
@@ -222,7 +240,7 @@ relocation of a non-DMA structure.
 - **Language**: C (C99/C11), with some C++ for unit tests
 - **Build System**: CMake (version 3.13+)
 - **License**: GNU GPL v3
-- **Version**: 9.0.1 (as of this writing)
+- **Version**: 9.1.0 (as of this writing)
 - **Codebase History**: Evolved from Cleanflight/Baseflight
 
 ## Architecture and Structure
@@ -287,7 +305,7 @@ The INAV codebase is organized into the following major subsystems:
 ### Code Style
 
 - **Indentation**: 4 spaces (no tabs)
-- **Braces**: K&R style (opening brace on same line, except for functions)
+- **Braces**: K&R style (opening brace on same line — this codebase keeps it on the same line for function signatures too; fork rule 16)
 - **Line Length**: Keep reasonable (typically under 120 characters)
 - **Comments**: Explain WHY, not WHAT. Document variables at declaration, not at extern usage
 - **Header Guards**: Use `#pragma once` (modern convention used throughout codebase)
@@ -568,7 +586,7 @@ Before making changes, review:
 5. **Update Documentation**: Add/update files in `/docs`
 6. **Consider Target Support**: Use `#ifdef USE_FEATURE` for optional features
 7. **Generate CLI setting docs**: Remember to inform user to run `python src/utils/update_cli_docs.py`
-8. **Follow conding standard**: Follow MISRA C rules
+8. **Follow coding standard**: Follow MISRA C rules (see fork rule 18)
 9. **Increase Paremeterer Group Version**: When changing PG structure, increase version corresponding in `PG_REGISTER`, `PG_REGISTER_WITH_RESET_FN`, `PG_REGISTER_WITH_RESET_TEMPLATE`, `PG_REGISTER_ARRAY` or `PG_REGISTER_ARRAY_WITH_RESET_FN`
 
 ### When Fixing Bugs
@@ -669,7 +687,7 @@ Always test on target or use `#if defined()` guards for MCU-specific code.
 
 ## Version Information
 
-This document is accurate for INAV 9.0.1. As the project evolves, some details may change. Always refer to the latest documentation and code for authoritative information.
+This document is accurate for INAV 9.1.0. As the project evolves, some details may change. Always refer to the latest documentation and code for authoritative information.
 
 ---
 

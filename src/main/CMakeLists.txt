@@ -54,6 +54,9 @@ main_sources(COMMON_SRC
     common/circular_queue.c
     common/circular_queue.h
 
+    mapping/unit_map.c
+    mapping/unit_map.h
+
     config/config_eeprom.c
     config/config_eeprom.h
     config/config_streamer.c

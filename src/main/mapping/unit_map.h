@@ -29,7 +29,7 @@
 // call site, confirm the site previously used that identical expression.
 // - "To" conversions (SI -> legacy) use nearest rounding (lroundf).
 // - Round-trip identity to(from(x)) == x holds exactly below the float32
-// exactness bound; above it the round trip is bounded by +/-1 count:
+//   exactness bound; above it the round trip is bounded by +/-1 count:
 //   absolute ints are exact only for |x| < 2^24, and the double rounding of
 //   any single-precision conversion (division or multiply-by-inverse) drifts
 //   +/-1 count beyond |x| ~ 2^23 for 1e-2/1e-1 scaled quantities.  Every
@@ -38,8 +38,14 @@
 //   representational resolution because int32 itself exceeds float32 mantissa
 //   granularity there -- that is inherent, the GPS datagram keeps int32 and is
 //   never routed through this module.
-// - The GPS wire format stays untouched; the e7 radians helpers exist only
-// for internal use and MUST NOT be used to rewrite the GPS datagram.
+// - EXCEPTION lat/lon does NOT exist: GPS coordinates are never routed through
+//   this module.  The wire keeps int32 1e-7 degrees end to end (MSP, PG,
+//   blackbox, GPS datagram); internal mission math converts them to
+//   origin-relative local metres by exact int32 delta subtraction inside
+//   geoConvertGeodeticToLocal() (latitude scaled by cos(lat)).  No float
+//   conversion is involved, so rule 17 (real32) needs no deviation.
+// - The GPS wire format stays untouched; nothing in this module touches GPS
+//   coordinates.
 //
 
 #pragma once
@@ -95,10 +101,12 @@ int32_t unitPowerToCentiwatts(float watts);
 float unitTemperatureFromDecidegreesC(int32_t decidegreesC);
 int16_t unitTemperatureToDecidegreesC(float degreesC);
 
-// --- Geo position: 1e-7 radians wire ints <-> radians (SI, internal) ---
-
-float unitLatLonFromDegreesE7(int32_t degreesE7);
-int32_t unitLatLonToDegreesE7(float radians);
+// --- Geo position: NOT in this module ---
+//
+// GPS coordinates stay int32 1e-7 degrees end to end (wire, storage, PG).
+// The internal geodetic->local-metres conversion lives in
+// geoConvertGeodeticToLocal() (exact int32 delta × cm/count constant,
+// longitude scaled by cos(lat)) -- no float, no shim, no double layer.
 
 // --- Time: wire microseconds <-> seconds (SI) ---
 

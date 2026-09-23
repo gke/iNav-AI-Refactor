@@ -116,16 +116,6 @@ int16_t unitTemperatureToDecidegreesC(float degreesC) {
     return (int16_t)constrain(lroundf(degreesC * 10.0f), INT16_MIN, INT16_MAX);
 } // unitTemperatureToDecidegreesC
 
-// Geo position (internal only; the GPS wire format is never touched)
-
-float unitLatLonFromDegreesE7(int32_t degreesE7) {
-    return ((float)degreesE7 * 0.0000001f) * (float)RAD;
-} // unitLatLonFromDegreesE7
-
-int32_t unitLatLonToDegreesE7(float radians) {
-    return lroundf((radians / (float)RAD) * 10000000.0f);
-} // unitLatLonToDegreesE7
-
 // --- Time: wire microseconds <-> seconds (SI) ---
 
 float unitTimeFromMicroseconds(int32_t microseconds) {
