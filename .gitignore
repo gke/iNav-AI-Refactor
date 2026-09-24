@@ -59,7 +59,3 @@ build_sitl/
 /build-test/
 /build-make/
 /obj/
-
-# Private work notes (never exported to GitHub)
-/AGENT.md
-/PROGRESS_REPORT.md
