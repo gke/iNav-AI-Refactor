@@ -32,8 +32,11 @@ actual aircraft.
   velocity, time, voltage, current, power, temperature), so subsystems hold
   SI floats while all wire and persistence formats stay byte-identical.
 - An **offline, standalone build harness** that auto-detects an on-box
-  `arm-none-eabi` toolchain and supports any target under `src/main/target`,
-  verified on BLUEBERRYF405.
+  `arm-none-eabi` toolchain. The root **`Makefile` builds all targets** —
+  every board under `src/main/target` is compiled and TU-verified in a single
+  sweep (`make`/`make boards`), and real per-board firmware is produced with
+  `make hex` (default board BLUEBERRYF405) or `make BOARD=X hex` for any
+  single board.
 - A **report-only rules linter** (`src/utils/rules_lint.py`) that tallies
   compliance against the personal rules 1–18.
 - A deliberately conservative approach: every refactor preserves original
@@ -57,9 +60,9 @@ tools, and documentation only.
 
 | Path | Purpose |
 |------|---------|
+| `Makefile` | Standalone build harness — sweeps all targets, per-board firmware |
 | `src/main/` | Source tree, including `mapping/` unit-mapping nucleus |
 | `src/utils/rules_lint.py` | Report-only rules linter (rules 1–18) |
-| `AGENT.md` | Project rules and guidance for AI agents |
 | `wiki/` → see project wiki | Single-page "Work to date" |
 
 ## Licence and credits

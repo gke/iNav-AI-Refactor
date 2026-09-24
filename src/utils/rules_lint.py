@@ -29,7 +29,7 @@ RULES = [
     ("r14_no_magic",      "14. No magic numbers (0,1,NULL exempt)"),
     ("r15_line_len",      "15. Max line length 80"),
     ("r16_brace_style",   "16. No newline before { after control/function header"),
-    ("r17_real32",        "17. real32 floats for physical quantities (no double)"),
+    ("r17_float",         "17. FLOAT for physical quantities (FLOAT64 where applicable)"),
     ("r18_misra",         "18. MISRA C:2012 (switch default, no recursion)"),
 ]
 
@@ -173,9 +173,9 @@ def score_file(path):
             nxt = code[i].strip()
             if nxt == '{':
                 add('r16_brace_style', i, raw)
-        # r17 double usage
+        # r17 double / FLOAT64 usage
         if re.search(r'\bdouble\b', cd):
-            add('r17_real32', i, raw)
+            add('r17_float', i, raw)
         # r18 switch without default (heuristic: find switch { ... } blocks)
         # handled per-file pass below
 

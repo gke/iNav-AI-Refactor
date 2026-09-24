@@ -44,7 +44,7 @@
 //   blackbox, GPS datagram); internal mission math converts them to
 //   origin-relative local metres by exact int32 delta subtraction inside
 //   geoConvertGeodeticToLocal() (latitude scaled by cos(lat)).  No float
-//   conversion is involved, so rule 17 (real32) needs no deviation.
+//   conversion is involved, so rule 17 (FLOAT) needs no deviation.
 // - The GPS wire format stays untouched; nothing in this module touches GPS
 //   coordinates.
 //

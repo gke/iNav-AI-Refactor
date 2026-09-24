@@ -118,9 +118,9 @@ The personal standard applied throughout the tree:
 15. **Max line length 80 characters.**
 16. **K&R brace style** — no newline before `{` after `if`/`else`/`for`/
     `while`/`switch` or a function header.
-17. **`real32` for physical quantities** end to end (internal float state);
-    integers only for genuinely raw/quantised data — GPS 1e-7, ADC/PWM
-    counts, enums, channel indices.
+17. **`FLOAT` for physical quantities** end to end (internal float32 state;
+    `FLOAT64`/double where applicable); integers only for genuinely
+    raw/quantised data — GPS 1e-7, ADC/PWM counts, enums, channel indices.
 18. **MISRA C:2012** for new and edited code: no recursion, no dynamic
     allocation, explicit boolean types, `default` in every `switch`, fixed
     explicit loop bounds.

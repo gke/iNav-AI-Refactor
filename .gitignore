@@ -52,11 +52,14 @@ tokens.yaml
 build_sitl/
 
 # Local-only maintenance scripts (never exported to GitHub)
-/scripts/update_local.sh
 /scripts/update_git.sh
 /scripts/update_github.sh
-/scripts/delete_github_repo.sh
 
 # Local build trees and firmware binaries (never exported to GitHub)
 /build-test/
 /build-make/
+/obj/
+
+# Private work notes (never exported to GitHub)
+/AGENT.md
+/PROGRESS_REPORT.md
